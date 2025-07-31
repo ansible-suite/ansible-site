@@ -1,0 +1,11 @@
+### The Ansible Galaxy requirements file
+
+
+## Collections requirements
+collections:
+  - ansible.posix
+  - community.general
+
+
+## Roles requirements
+roles: []

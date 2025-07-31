@@ -1,0 +1,17 @@
+### The PIP requirements file
+# Specifies the Ansible package and optionally other PIP dependencies.
+
+
+## Ansible
+# Specify an Ansible package to install.
+# For more information, see https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#selecting-an-ansible-package-and-version-to-install
+
+# 'ansible-core': A minimalist language and runtime package containing a set of built-in modules and plugins.
+ansible-core
+
+# 'ansible': A much larger “batteries included” package, which adds a community-curated selection of Ansible Collections for automating a wide variety of devices
+#ansible
+
+
+## Other
+# Here, you can specify other PIP dependencies of the site.
