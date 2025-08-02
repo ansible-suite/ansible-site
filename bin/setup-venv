@@ -1,0 +1,24 @@
+#!/bin/bash
+
+## Creates or updates the Python virtual environment
+# Performs the following actions:
+#   - creates the venv if it does not exist yet
+#   - installs and/or upgrades PIP packages from 'requirements.txt'
+
+
+## Activate the project environment
+source "$(dirname "$(readlink -f "$0")")/activate"
+
+
+## Create the virtual environment, if it does not exist yet
+if [[ ! -d "$venv" ]]; then
+    python3 -m venv "$venv" || exit $?
+fi
+
+
+## Activate the virtual environment
+source "$venv/bin/activate" || exit $?
+
+
+## Install PIP packages from 'requirements.txt'
+pip install -U -r "$project/requirements.txt"

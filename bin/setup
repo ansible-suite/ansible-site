@@ -1,0 +1,19 @@
+#!/bin/bash
+
+## Sets up the Ansible environment
+# Performs the following actions:
+#   - runs 'setup-venv' to set up Python venv with dependencies
+#   - runs 'setup-galaxy' to download Ansible collections and roles using Ansible Galaxy
+
+
+## Define the 'bin' directory
+bin="$(dirname "$(readlink -f "$0")")"
+
+
+## Set up the Ansible environment
+
+# set up Python venv with dependencies
+"$bin/setup-venv"
+
+# download Ansible collections and roles using Ansible Galaxy
+"$bin/setup-galaxy"

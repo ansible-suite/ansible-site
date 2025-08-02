@@ -1,0 +1,31 @@
+#!/bin/bash
+
+## Installs Ansible collections and roles using Ansible Galaxy
+# Performs the following actions:
+#   - for this run, overrides collections and roles install path 
+#     to 'external_roles' and 'external_collections', respectively
+#   - installs and/or upgrades Ansible collections from 'requirements.yml'
+#   - reinstalls Ansible roles from 'requirements.yml',
+#     as upgrading what has changed is not possible
+
+
+## Activate the project environment
+source "$(dirname "$(readlink -f "$0")")/activate"
+
+
+## Define variables
+requirements="$project/requirements.yml"
+
+
+## Override collections and roles install path
+export ANSIBLE_COLLECTIONS_PATH='external_collections'
+export ANSIBLE_ROLES_PATH='external_roles'
+
+
+## Perform the installation
+
+# install collections
+ansible-galaxy collection install -r "$requirements" --upgrade
+
+# install roles
+ansible-galaxy role install -r "$requirements" --force
