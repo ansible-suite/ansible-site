@@ -1,0 +1,95 @@
+#!/bin/bash
+
+## Environment activation script
+# This script must be run with 'source' or '.' from an existing bash or zsh shell, not executed directly.
+# Performs the following actions in the sourcing shell:
+#   - activates the Python venv, if it exists, by sourcing 'venv/bin/activate'
+#   - adds the 'bin' directory to the PATH environment variable
+#   - sets the ANSIBLE_CONFIG environment variable to the 'ansible.cfg' file
+# In addition, it creates a deactivation function which reverts these actions.
+
+
+## Exit if executed directly
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+    echo "$0: This script must be called with 'source' or '.' from an existing shell." >&2
+    exit 1
+fi
+
+
+## Declare a helper function to get the current script path in bash and zsh
+get_script_path() {
+    local source="${BASH_SOURCE[0]}" # bash
+    [[ -z "$source" ]] && source="${(%):-%x}" # zsh
+    echo "$source"
+}
+
+
+## Define internal variables
+
+# the project directory
+project="$(realpath "$(dirname "$(readlink -f "$(get_script_path)")")/..")"
+
+# the Python venv directory
+venv="$project/venv"
+
+# the 'bin' directory
+bin="$project/bin"
+
+
+## Activate the Python venv, if it exists
+if [[ -d "$venv" ]]; then
+
+    # source the activation script
+    source "$venv/bin/activate"
+
+    # rename the deactivation function to 'venv_deactivate'
+    # to avoid conflict with the deactivation function of this script
+    eval "$(declare -f deactivate | sed 's/deactivate/venv_deactivate/')"
+    unset -f deactivate
+
+fi
+
+
+## Modify environment variables
+
+# Add the 'bin' directory to PATH
+if [[ "$PATH:" != "$bin:"* ]]; then
+    export PATH="$bin:$PATH"
+fi
+
+# Set the ANSIBLE_CONFIG variable to the 'ansible.cfg' file
+if [[ "$ANSIBLE_CONFIG" != "$project/ansible.cfg" ]]; then
+    _ANSIBLE_CONFIG_old="$ANSIBLE_CONFIG"
+fi
+export ANSIBLE_CONFIG="$project/ansible.cfg"
+
+
+## Declare a deactivation function
+deactivate() {
+
+    ## Revert modified environment variables
+
+    # Remove the 'bin' directory from PATH
+    if [[ "$PATH:" == "$bin:"* ]]; then
+        PATH="$PATH:"
+        PATH="${PATH//$bin:/}"
+        PATH="${PATH%:}"
+        export PATH
+    fi
+
+    # Revert ANSIBLE_CONFIG
+    export ANSIBLE_CONFIG="$_ANSIBLE_CONFIG_old"
+    if [[ -z "$ANSIBLE_CONFIG" ]]; then
+        unset ANSIBLE_CONFIG
+    fi
+
+
+    ## Deactivate the Python venv, if it is activated
+    if typeset -f venv_deactivate > /dev/null; then
+        venv_deactivate
+    fi
+
+    ## Unset this function
+    unset -f deactivate
+
+}
