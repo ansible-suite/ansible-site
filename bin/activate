@@ -35,6 +35,12 @@ venv="$project/venv"
 # the 'bin' directory
 bin="$project/bin"
 
+# the external tools directory
+external_tools="$project/external_tools"
+
+# the directories to add to PATH
+custom_path="$bin:$external_tools"
+
 
 ## Activate the Python venv, if it exists
 if [[ -d "$venv" ]]; then
@@ -52,9 +58,9 @@ fi
 
 ## Modify environment variables
 
-# Add the 'bin' directory to PATH
-if [[ "$PATH:" != "$bin:"* ]]; then
-    export PATH="$bin:$PATH"
+# Add custom directories to PATH
+if [[ "$PATH:" != "$custom_path:"* ]]; then
+    export PATH="$custom_path:$PATH"
 fi
 
 # Set the ANSIBLE_CONFIG variable to the 'ansible.cfg' file
@@ -69,10 +75,10 @@ deactivate() {
 
     ## Revert modified environment variables
 
-    # Remove the 'bin' directory from PATH
-    if [[ "$PATH:" == "$bin:"* ]]; then
+    # Remove custom directories from PATH
+    if [[ "$PATH:" == "$custom_path:"* ]]; then
         PATH="$PATH:"
-        PATH="${PATH//$bin:/}"
+        PATH="${PATH//$custom_path:/}"
         PATH="${PATH%:}"
         export PATH
     fi

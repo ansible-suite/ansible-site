@@ -1,6 +1,9 @@
 # Python venv
 venv/
 
+# External tools
+external_tools/
+
 # External collections and roles installed with Ansible Galaxy
 external_collections/
 external_roles/
