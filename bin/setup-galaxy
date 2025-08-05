@@ -7,6 +7,8 @@
 #   - installs and/or upgrades Ansible collections from 'requirements.yml'
 #   - reinstalls Ansible roles from 'requirements.yml',
 #     as upgrading what has changed is not possible
+#   - if current environment's venv is active, calls 'install-pip-deps'
+#     to install PIP dependencies required by collections and roles
 
 
 ## Activate the project environment
@@ -22,10 +24,22 @@ export ANSIBLE_COLLECTIONS_PATH="$project/external_collections"
 export ANSIBLE_ROLES_PATH="$project/external_roles"
 
 
-## Perform the installation
+## Install collections and roles
 
 # install collections
 ansible-galaxy collection install -r "$requirements" --upgrade
 
 # install roles
 ansible-galaxy role install -r "$requirements" --force
+
+
+## Install PIP dependencies of collections and roles
+
+# check if current environment's venv is active
+if [[ "$VIRTUAL_ENV" = "$venv" ]]; then
+
+    # calls 'install-pip-deps' to install PIP dependencies
+    # of collections and roles
+    install-pip-deps
+
+fi

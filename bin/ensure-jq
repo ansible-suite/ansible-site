@@ -1,0 +1,60 @@
+#!/bin/bash
+
+### Ensures the 'jq' command is present
+# It checks for the 'jq' command, and, if not found,
+# downloads a standalone binary from the official repository.
+# Supports only Linux OS and the amd64, i386, arm64 and armhf architecture.
+
+
+## Activate the project environment
+source "$(dirname "$(readlink -f "$0")")/activate"
+
+
+## Exit if command is found
+command -v 'jq' > /dev/null && exit 0
+
+
+## Define variables
+
+# the command and its version
+command='jq'
+version="1.8.1"
+
+# the download target
+target="$external_tools/$command"
+target_part="$target.part"
+
+# OS and architecture
+if [[ "$(uname -s)" != 'Linux' ]]; then
+    echo "$0: Unsupported OS. Install '$command' manually."
+    exit 1
+fi
+
+case "$(uname -m)" in
+    x86_64)     arch="amd64"    ;;
+    i386|i686)  arch="i386"     ;;
+    aarch64)    arch="arm64"    ;;
+    armv7l)     arch="armhf"    ;;
+    *)          
+        echo "$0: Unsupported architecture. Install '$command' manually."
+        exit 1
+        ;;
+esac
+
+# the download URL
+download_url="https://github.com/jqlang/jq/releases/download/jq-$version/jq-linux-$arch"
+
+
+## Download the standalone binary
+
+# create parent directory for the download target
+mkdir -p "$(dirname "$target")"
+
+# download the binary to a .part file, exit if not successful
+wget "$download_url" -O "$target_part" || exit
+
+# make the file executable
+chmod +x "$target_part"
+
+# rename the .part file to the final name
+mv "$target_part" "$target"
