@@ -1,11 +1,11 @@
 #!/bin/bash
 
-## Environment activation script
+### Environment activation script
 # This script must be run with 'source' or '.' from an existing bash or zsh shell, not executed directly.
 # Performs the following actions in the sourcing shell:
 #   - activates the Python venv, if it exists, by sourcing 'venv/bin/activate'
-#   - adds the 'bin' directory to the PATH environment variable
-#   - sets the ANSIBLE_CONFIG environment variable to the 'ansible.cfg' file
+#   - adds the 'bin' and 'external_tools' directories to the PATH environment variable
+#   - sets the ANSIBLE_CONFIG environment variable to point to the 'ansible.cfg' file
 # In addition, it creates a deactivation function which reverts these actions.
 
 
