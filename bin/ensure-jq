@@ -3,7 +3,7 @@
 ### Ensures the 'jq' command is present
 # It checks for the 'jq' command, and, if not found,
 # downloads a standalone binary from the official repository.
-# Supports only Linux OS and the amd64, i386, arm64 and armhf architecture.
+# Supports only Linux OS and the amd64, i386, arm64 and armhf architectures.
 
 
 ## Activate the project environment

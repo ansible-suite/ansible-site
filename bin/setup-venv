@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Creates or updates the Python virtual environment
+### Creates or updates the Python virtual environment
 # Performs the following actions:
 #   - creates the venv if it does not exist yet
 #   - installs and/or upgrades PIP packages from 'requirements.txt'
