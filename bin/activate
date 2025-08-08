@@ -50,7 +50,7 @@ if [[ -d "$venv" ]]; then
 
     # rename the deactivation function to 'venv_deactivate'
     # to avoid conflict with the deactivation function of this script
-    eval "$(declare -f deactivate | sed 's/deactivate/venv_deactivate/')"
+    source <(declare -f deactivate | sed 's/deactivate/venv_deactivate/')
     unset -f deactivate
 
 fi
