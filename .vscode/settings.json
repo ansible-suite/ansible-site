@@ -1,0 +1,45 @@
+/** The VS Code settings for this environment **/
+{
+
+    /* Shell environment activation */
+
+    // Set that shell integration is enabled,
+    // as the custom scripts always make use of its scripts
+    "terminal.integrated.shellIntegration.enabled": true,
+
+    // Disable Python venv auto-activation,
+    // as it will be activated in the custom initialization files
+    "python.terminal.activateEnvironment": false,
+    "python.terminal.activateEnvInCurrentTerminal": false,
+
+    // Modify shell profiles to use custom initialization files
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "args": ["--init-file", "${workspaceFolder}/.vscode/.bashrc"],
+        },
+        "zsh": {
+            "env": {
+                "ZDOTDIR": "${workspaceFolder}/.vscode",
+                "ANSIBLESITE_USER_ZDOTDIR": "${env:ZDOTDIR}"
+            }
+        }
+    },
+    "terminal.integrated.profiles.osx": {
+        "bash": {
+            "args": ["--init-file", "${workspaceFolder}/.vscode/.bashrc"]
+        },
+        "zsh": {
+            "env": {
+                "ZDOTDIR": "${workspaceFolder}/.vscode",
+                "ANSIBLESITE_USER_ZDOTDIR": "${env:ZDOTDIR}"
+            }
+        }
+    },
+
+    
+    /* Ansible extension */
+
+    // Configure the Ansible extension to use the Python interpreter from the venv
+    "ansible.python.interpreterPath": "${workspaceFolder}/venv/bin/python",
+
+}
