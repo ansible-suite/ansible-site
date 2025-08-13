@@ -11,14 +11,14 @@ source "$(dirname "$(readlink -f "$0")")/activate"
 
 
 ## Create the virtual environment, if it does not exist yet
-if [[ ! -d "$venv" ]]; then
-    python3 -m venv "$venv" || exit $?
+if [[ ! -d "$ANSIBLESITE_VENV" ]]; then
+    python3 -m venv "$ANSIBLESITE_VENV" || exit $?
 fi
 
 
 ## Activate the virtual environment
-source "$venv/bin/activate" || exit $?
+source "$ANSIBLESITE_VENV/bin/activate" || exit $?
 
 
 ## Install PIP packages from 'requirements.txt'
-pip install -U -r "$project/requirements.txt"
+pip install -U -r "$ANSIBLESITE/requirements.txt"
