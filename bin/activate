@@ -3,7 +3,7 @@
 ### The ansible-site environment activation script
 # This script must be run with 'source' or '.' from an existing bash or zsh shell, not executed directly.
 # Performs the following actions in the sourcing shell:
-#   - activates the Python ANSIBLESITE_VENV, if it exists, by sourcing 'ANSIBLESITE_VENV/bin/activate'
+#   - activates the Python venv, if it exists, by sourcing 'venv/bin/activate'
 #   - adds the 'bin' and 'external_tools' directories to the PATH environment variable
 #   - sets the ANSIBLE_CONFIG environment variable to point to the 'ansible.cfg' file
 # In addition, it creates a deactivation function which reverts these actions.
