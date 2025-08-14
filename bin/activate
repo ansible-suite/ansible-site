@@ -70,11 +70,11 @@ ANSIBLESITE_VENV="$ANSIBLESITE/venv"
 # the directory with scripts
 ANSIBLESITE_BIN="$ANSIBLESITE/bin"
 
-# the external tools directory
-ANSIBLESITE_EXTERNAL_TOOLS="$ANSIBLESITE/external_tools"
+# the external bin directory
+ANSIBLESITE_EXTERNAL_BIN="$ANSIBLESITE/external_bin"
 
 # the directories to add to PATH
-ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_TOOLS"
+ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_BIN"
 
 
 ## Activate the Python venv
@@ -123,7 +123,7 @@ deactivate() {
     unset ANSIBLESITE
     unset ANSIBLESITE_VENV
     unset ANSIBLESITE_BIN
-    unset ANSIBLESITE_EXTERNAL_TOOLS
+    unset ANSIBLESITE_EXTERNAL_BIN
     unset ANSIBLESITE_PATH
 
     # unset internal functions
