@@ -19,7 +19,7 @@ source "$(dirname "$(readlink -f "$0")")/activate"
 
 
 ## Define variables
-requirements="$ANSIBLESITE/requirements.yml"
+REQUIREMENTS="$ANSIBLESITE/requirements.yml"
 
 
 ## Override collections and roles install path
@@ -30,10 +30,10 @@ export ANSIBLE_ROLES_PATH="$ANSIBLESITE/external_roles"
 ## Install collections and roles
 
 # install collections
-ansible-galaxy collection install -r "$requirements" --upgrade
+ansible-galaxy collection install -r "$REQUIREMENTS" --upgrade
 
 # install roles
-ansible-galaxy role install -r "$requirements" --force
+ansible-galaxy role install -r "$REQUIREMENTS" --force
 
 
 ## Install PIP dependencies of collections and roles

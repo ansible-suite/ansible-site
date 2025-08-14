@@ -17,44 +17,44 @@ command -v 'jq' > /dev/null && exit 0
 ## Define variables
 
 # the command and its version
-command='jq'
-version="1.8.1"
+COMMAND='jq'
+VERSION="1.8.1"
 
 # the download target
-target="$ANSIBLESITE_EXTERNAL_TOOLS/$command"
-target_part="$target.part"
+TARGET="$ANSIBLESITE_EXTERNAL_TOOLS/$COMMAND"
+TARGET_PART="$TARGET.part"
 
 # OS and architecture
 if [[ "$(uname -s)" != 'Linux' ]]; then
-    echo "$0: Unsupported OS. Install '$command' manually."
+    echo "$0: Unsupported OS. Install '$COMMAND' manually."
     exit 1
 fi
 
 case "$(uname -m)" in
-    x86_64)     arch="amd64"    ;;
-    i386|i686)  arch="i386"     ;;
-    aarch64)    arch="arm64"    ;;
-    armv7l)     arch="armhf"    ;;
+    x86_64)     ARCH="amd64"    ;;
+    i386|i686)  ARCH="i386"     ;;
+    aarch64)    ARCH="arm64"    ;;
+    armv7l)     ARCH="armhf"    ;;
     *)          
-        echo "$0: Unsupported architecture. Install '$command' manually."
+        echo "$0: Unsupported architecture. Install '$COMMAND' manually."
         exit 1
         ;;
 esac
 
 # the download URL
-download_url="https://github.com/jqlang/jq/releases/download/jq-$version/jq-linux-$arch"
+DOWNLOAD_URL="https://github.com/jqlang/jq/releases/download/jq-$VERSION/jq-linux-$ARCH"
 
 
 ## Download the standalone binary
 
 # create parent directory for the download target
-mkdir -p "$(dirname "$target")"
+mkdir -p "$(dirname "$TARGET")"
 
 # download the binary to a .part file, exit if not successful
-wget "$download_url" -O "$target_part" || exit
+wget "$DOWNLOAD_URL" -O "$TARGET_PART" || exit
 
 # make the file executable
-chmod +x "$target_part"
+chmod +x "$TARGET_PART"
 
 # rename the .part file to the final name
-mv "$target_part" "$target"
+mv "$TARGET_PART" "$TARGET"
