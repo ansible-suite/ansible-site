@@ -8,14 +8,14 @@
 
 
 ## Define the 'bin' directory
-bin="$(dirname "$(readlink -f "$0")")"
+BIN="$(dirname "$(readlink -f "$0")")"
 
 
 ## Set up the Ansible environment
 
 # set up Python venv with dependencies
-"$bin/setup-venv"
+"$BIN/setup-venv"
 
 # download Ansible collections and roles using Ansible Galaxy
 # and install PIP dependencies required by them
-"$bin/setup-galaxy"
+"$BIN/setup-galaxy"
