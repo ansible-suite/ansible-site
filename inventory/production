@@ -1,0 +1,5 @@
+### The inventory file for production machines
+# This file can be filled with groups and hosts in the INI or YAML formats,
+# or it can be replaced by a directory containing different (possibly dynamic) inventory sources,
+# or it can be removed, if production environment is not used.
+# For more information, see https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html
