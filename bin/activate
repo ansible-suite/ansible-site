@@ -2,6 +2,7 @@
 
 ### The ansible-site environment activation script
 # This script must be run with 'source' or '.' from an existing bash or zsh shell, not executed directly.
+# The first command-line argument to this script (or to the calling script, if not overridden) specifies the setup mode.
 # Performs the following actions in the sourcing shell:
 #   - activates the Python venv, if it exists, by sourcing 'venv/bin/activate'
 #   - adds the 'bin' and 'external_tools' directories to the PATH environment variable
@@ -77,6 +78,14 @@ ANSIBLESITE_EXTERNAL_BIN="$ANSIBLESITE/external_bin"
 ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_BIN"
 
 
+## Process arguments
+
+# determine the setup mode
+if [[ -n "$1" ]]; then
+    ANSIBLESITE_SETUP_MODE="$1"
+fi
+
+
 ## Activate the Python venv
 
 # Activate only if the venv exists and is not activated by us yet
@@ -125,6 +134,7 @@ deactivate() {
     unset ANSIBLESITE_BIN
     unset ANSIBLESITE_EXTERNAL_BIN
     unset ANSIBLESITE_PATH
+    unset ANSIBLESITE_SETUP_MODE
 
     # unset internal functions
     unset -f _get_script_path

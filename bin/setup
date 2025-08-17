@@ -5,6 +5,8 @@
 #   - runs 'setup-venv' to set up Python venv with dependencies
 #   - runs 'setup-galaxy' to download Ansible collections and roles using Ansible Galaxy
 #     and to install PIP dependencies required by them
+# This script passes the first command-line argument to 'setup-venv'
+# to specify the setup mode.
 
 
 ## Define the 'bin' directory
@@ -14,7 +16,7 @@ BIN="$(dirname "$(readlink -f "$0")")"
 ## Set up the Ansible environment
 
 # set up Python venv with dependencies
-"$BIN/setup-venv"
+"$BIN/setup-venv" "$1"
 
 # download Ansible collections and roles using Ansible Galaxy
 # and install PIP dependencies required by them
