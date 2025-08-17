@@ -1,5 +1,9 @@
-### The PIP requirements file
-# Specifies the Ansible package and optionally other PIP dependencies.
+### The common PIP requirements file
+# Specifies the Ansible package and optionally other
+# runtime (not development) dependencies of this ansible site.
+
+# The requirements specified in this file should be installed
+# in all cases when using a venv from this environment to run Ansible.
 
 
 ## Ansible
@@ -14,4 +18,4 @@ ansible-core
 
 
 ## Other
-# Here, you can specify other PIP dependencies of the site.
+# Here, you can specify other common PIP dependencies of the site.

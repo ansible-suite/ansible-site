@@ -3,7 +3,9 @@
 ### Creates or updates the Python virtual environment
 # Performs the following actions:
 #   - creates the venv if it does not exist yet
-#   - installs and/or upgrades PIP packages from 'requirements.txt'
+#   - installs and/or upgrades PIP packages from 'requirements.txt',
+#     or 'requirements_$ANSIBLESITE_SETUP_MODE' if the setup mode is defined
+#     using the ANSIBLESITE_SETUP_MODE env variable or the first command-line argument
 
 
 ## Activate the project environment
@@ -20,5 +22,14 @@ fi
 source "$ANSIBLESITE_VENV/bin/activate" || exit $?
 
 
-## Install PIP packages from 'requirements.txt'
-pip install -U -r "$ANSIBLESITE/requirements.txt"
+## Install PIP packages from a requirements file
+
+# get the file name
+if [[ -n "$ANSIBLESITE_SETUP_MODE" ]]; then
+    REQUIREMENTS_FILE="requirements_$ANSIBLESITE_SETUP_MODE.txt"
+else
+    REQUIREMENTS_FILE="requirements.txt"
+fi
+
+# run 'pip' to install and/or upgrade the packages
+pip install -U -r "$ANSIBLESITE/$REQUIREMENTS_FILE"
