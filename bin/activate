@@ -1,0 +1,147 @@
+#!/bin/bash
+
+### The ansible-site environment activation script
+# This script must be run with 'source' or '.' from an existing bash or zsh shell, not executed directly.
+# The first command-line argument to this script (or to the calling script, if not overridden) specifies the setup mode.
+# Performs the following actions in the sourcing shell:
+#   - activates the Python venv, if it exists, by sourcing 'venv/bin/activate'
+#   - adds the 'bin' and 'external_tools' directories to the PATH environment variable
+#   - sets the ANSIBLE_CONFIG environment variable to point to the 'ansible.cfg' file
+# In addition, it creates a deactivation function which reverts these actions.
+
+
+## Exit if executed directly
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+    echo "$0: This script must be called with 'source' or '.' from an existing shell." >&2
+    exit 1
+fi
+
+
+## Declare internal functions
+
+# Helper function to get the current script path in bash and zsh
+_get_script_path() {
+    local SOURCE="${BASH_SOURCE[0]}" # bash
+    [[ -z "$SOURCE" ]] && SOURCE="${(%):-%x}" # zsh
+    echo "$SOURCE"
+}
+
+# Function for removing custon directories from PATH
+_unset_path() {
+    if [[ "$PATH:" == "$ANSIBLESITE_PATH:"* ]]; then
+        PATH="$PATH:"
+        PATH="${PATH//$ANSIBLESITE_PATH:/}"
+        PATH="${PATH%:}"
+        export PATH
+    fi
+}
+
+# Internal deactivation function
+_deactivate() {
+
+    ## Revert modified environment variables
+
+    # Remove custom directories from PATH
+    _unset_path
+
+    # Revert ANSIBLE_CONFIG
+    export ANSIBLE_CONFIG="$_OLD_ANSIBLE_CONFIG"
+    if [[ -z "$ANSIBLE_CONFIG" ]]; then
+        unset ANSIBLE_CONFIG
+    fi
+    unset _OLD_ANSIBLE_CONFIG
+
+
+    ## Deactivate the Python venv, if it is activated
+    if typeset -f _venv_deactivate > /dev/null; then
+        _venv_deactivate
+    fi
+
+}
+
+
+## Define variables
+
+# the ansible-site directory
+ANSIBLESITE="$(realpath "$(dirname "$(readlink -f "$(_get_script_path)")")/..")"
+
+# the Python ANSIBLESITE_VENV directory
+ANSIBLESITE_VENV="$ANSIBLESITE/venv"
+
+# the directory with scripts
+ANSIBLESITE_BIN="$ANSIBLESITE/bin"
+
+# the external bin directory
+ANSIBLESITE_EXTERNAL_BIN="$ANSIBLESITE/external_bin"
+
+# the directories to add to PATH
+ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_BIN"
+
+
+## Process arguments
+
+# determine the setup mode
+if [[ -n "$1" ]]; then
+    ANSIBLESITE_SETUP_MODE="$1"
+fi
+
+
+## Activate the Python venv
+
+# Activate only if the venv exists and is not activated by us yet
+if [[ -d "$ANSIBLESITE_VENV" ]] && ! typeset -f _venv_deactivate > /dev/null; then
+
+    # ensure PATH does not contain custom paths
+    # when activating the ANSIBLESITE_VENV
+    _unset_path
+
+    # source the activation script
+    source "$ANSIBLESITE_VENV/bin/activate"
+
+    # rename the deactivation function to '_venv_deactivate'
+    # to avoid conflict with the deactivation function of this script
+    source <(declare -f deactivate | sed 's/deactivate/_venv_deactivate/')
+    unset -f deactivate
+
+fi
+
+
+## Modify environment variables
+
+# Add custom directories to PATH
+if [[ "$PATH:" != "$ANSIBLESITE_PATH:"* ]]; then
+    export PATH="$ANSIBLESITE_PATH:$PATH"
+fi
+
+# Set the ANSIBLE_CONFIG variable to the 'ansible.cfg' file
+if [[ "$ANSIBLE_CONFIG" != "$ANSIBLESITE/ansible.cfg" ]]; then
+    _OLD_ANSIBLE_CONFIG="$ANSIBLE_CONFIG"
+fi
+export ANSIBLE_CONFIG="$ANSIBLESITE/ansible.cfg"
+
+
+## Declare the public deactivation function
+deactivate() {
+
+    ## Call the internal deactivation function
+    _deactivate
+
+    ## Perform cleanup
+
+    # unset variables
+    unset ANSIBLESITE
+    unset ANSIBLESITE_VENV
+    unset ANSIBLESITE_BIN
+    unset ANSIBLESITE_EXTERNAL_BIN
+    unset ANSIBLESITE_PATH
+    unset ANSIBLESITE_SETUP_MODE
+
+    # unset internal functions
+    unset -f _get_script_path
+    unset -f _unset_path
+    unset -f _deactivate
+
+    # unset this deactivation function
+    unset -f deactivate
+
+}

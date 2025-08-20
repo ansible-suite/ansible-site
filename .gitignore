@@ -1,0 +1,12 @@
+# Python venv
+venv/
+
+# External bin directory
+external_bin/
+
+# External collections and roles installed with Ansible Galaxy
+external_collections/
+external_roles/
+
+# Galaxy token
+galaxy_token

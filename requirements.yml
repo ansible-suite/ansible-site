@@ -1,0 +1,13 @@
+### The Ansible Galaxy requirements file
+# Specifies the collections and roles that should be installed
+# in this Ansible environment.
+
+
+## Collections requirements
+collections:
+  - ansible.posix
+  - community.general
+
+
+## Roles requirements
+roles: []

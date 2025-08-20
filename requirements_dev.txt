@@ -1,0 +1,29 @@
+### The development PIP requirements file
+# References the common PIP requirements file
+# and adds packages for development of Ansible content
+
+# The requirements specified in this file should be installed
+# in cases when using a venv from this environment to develop with Ansible.
+
+
+## The common requirements
+
+# Reference the common requirements file
+-r requirements.txt
+
+
+## Ansible development packages
+
+# Ansible Lint: a command-line tool for linting playbooks, roles and collections,
+# see https://ansible.readthedocs.io/projects/lint/.
+# Should always be installed for development
+ansible-lint
+
+# Ansible Development Tools (ADT): aims to streamline the setup and usage of several tools needed to create Ansible content,
+# see https://ansible.readthedocs.io/projects/dev-tools/.
+# Optional, contains all Ansible development tools.
+#ansible-dev-tools
+
+
+## Other
+# Here, you can specify other development PIP dependencies of the site.

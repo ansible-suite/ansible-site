@@ -1,0 +1,48 @@
+#!/bin/bash
+
+### Installs Ansible collections and roles using Ansible Galaxy
+# Performs the following actions:
+#   - for this run, overrides collections and roles install path 
+#     to 'external_roles' and 'external_collections', respectively
+#   - installs and/or upgrades Ansible collections from 'requirements.yml'
+#   - reinstalls Ansible roles from 'requirements.yml',
+#     as installing and/or upgrading only changed roles is not possible
+#   - if current environment's venv is active, calls 'install-pip-deps'
+#     to install PIP dependencies required by collections and roles
+#
+# Note: In order for the installed collections and roles to be found by Ansible,
+# the 'external_collections' directory must be present in the collections path
+# and the 'external_roles' directory must be present in the roles path.
+
+## Activate the project environment
+source "$(dirname "$(readlink -f "$0")")/activate"
+
+
+## Define variables
+REQUIREMENTS="$ANSIBLESITE/requirements.yml"
+
+
+## Override collections and roles install path
+export ANSIBLE_COLLECTIONS_PATH="$ANSIBLESITE/external_collections"
+export ANSIBLE_ROLES_PATH="$ANSIBLESITE/external_roles"
+
+
+## Install collections and roles
+
+# install collections
+ansible-galaxy collection install -r "$REQUIREMENTS" --upgrade
+
+# install roles
+ansible-galaxy role install -r "$REQUIREMENTS" --force
+
+
+## Install PIP dependencies of collections and roles
+
+# check if current environment's venv is active
+if [[ "$VIRTUAL_ENV" = "$ANSIBLESITE_VENV" ]]; then
+
+    # calls 'install-pip-deps' to install PIP dependencies
+    # of collections and roles
+    install-pip-deps
+
+fi
