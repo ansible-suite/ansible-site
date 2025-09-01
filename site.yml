@@ -1,0 +1,4 @@
+### The playbook for defining the state of the Ansible site
+# This playbook should import all playbooks that are together meant to define the state
+# of this ansible site.
+# The imported playbooks must be idempotent as site.yml may be run repeatedly for periodic remediation.
