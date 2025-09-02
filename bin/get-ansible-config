@@ -25,6 +25,13 @@ jq -r --argjson settings "$CONF_SETTINGS_LIST" '
     .[] | select(.name | IN($settings[])) |
 
     # Print the config in in a shell-sourceable format
-    "\(.name)=\"\(.value | if type == "array" then (. | join(":")) else . end)\""
+    "\(.name)=\"\(
+        .value |
+        if . == null then
+            ""
+        elif type == "array" then
+            (. | join(":")) 
+        else . end
+    )\""
 
 '
