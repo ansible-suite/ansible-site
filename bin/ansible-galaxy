@@ -1,0 +1,23 @@
+#!/bin/bash
+
+### Ansible Galaxy wrapper
+# Sets the ANSIBLE_COLLECTIONS_PATH and ANSIBLE_ROLES_PATH env variables
+# to skip the version-controlled 'collections/' and 'roles/' directories
+
+
+## Activate the project environment
+source "$(dirname "$(readlink -f "$0")")/activate"
+
+
+## Skip the version-controlled 'collections/' and 'roles/' directories
+
+# Determine collections and roles path from Ansible configuration
+eval "$(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)"
+
+## Override collections and roles path
+export ANSIBLE_COLLECTIONS_PATH="$(remove-from-path "$ANSIBLESITE/collections" "$COLLECTIONS_PATHS")"
+export ANSIBLE_ROLES_PATH="$(remove-from-path "$ANSIBLESITE/roles" "$DEFAULT_ROLES_PATH")"
+
+
+## Execute the real 'ansible-galaxy' command
+run-wrapped ansible-galaxy "$@"
