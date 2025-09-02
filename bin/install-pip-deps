@@ -26,8 +26,8 @@ pip install -r <(
     for COLLECTIONS_PATH in $COLLECTIONS_PATHS; do
 
         # iterate over possible locations of requirements.txt
-        for REQ_FILE in "$(realpath "$COLLECTIONS_PATH")"/ansible_collections/*/*/requirements.txt; do
-            echo "-r \"$REQ_FILE\""
+        for REQ_FILE in "$COLLECTIONS_PATH"/ansible_collections/*/*/requirements.txt; do
+            echo "-r '$REQ_FILE'"
         done
 
     done
@@ -36,8 +36,8 @@ pip install -r <(
     for ROLES_PATH in $DEFAULT_ROLES_PATH; do
 
         # iterate over possible locations of requirements.txt
-        for REQ_FILE in "$(realpath "$ROLES_PATH")"/*/requirements.txt; do
-            echo "-r \"$REQ_FILE\""
+        for REQ_FILE in "$ROLES_PATH"/*/requirements.txt; do
+            echo "-r '$REQ_FILE'"
         done
 
     done
