@@ -10,3 +10,6 @@ external_roles/
 
 # Galaxy token
 galaxy_token
+
+# Vault password
+.vault_pass
