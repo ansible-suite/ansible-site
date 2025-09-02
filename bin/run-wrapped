@@ -1,0 +1,22 @@
+#!/bin/bash
+
+### A helper script for shell wrappers to call the real command
+# Takes the command-line arguments for running the real command
+
+## Define variables
+BIN="$(dirname "$(readlink -f "$0")")"
+CMD="$1"
+# all other arguments are used as arguments for the real command
+shift
+
+
+## Run the command from other directory than $BIN
+
+# Determine the real command's path with modified PATH variable
+CMD_PATH="$(
+    PATH=$("$BIN/remove-from-path" "$BIN" "$PATH")
+    command -v "$CMD"
+)"
+
+# Run the real command
+exec "$CMD_PATH" "$@"
