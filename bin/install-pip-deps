@@ -9,17 +9,8 @@
 source "$(dirname "$(readlink -f "$0")")/activate"
 
 
-## Ensure jq is available
-ensure-jq
-
-
 ## Determine collections and roles path
-
-# config from ansible
-source <(
-    ansible-config dump -f json |
-    jq -r '.[] | select(.name == "COLLECTIONS_PATHS" or .name == "DEFAULT_ROLES_PATH") | "\(.name)=\"\(.value | join(":"))\""'
-)
+source <(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)
 
 
 ## Scan the collections and roles path for 'requirements.txt' files and install PIP dependencies
