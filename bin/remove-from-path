@@ -1,0 +1,33 @@
+#!/bin/bash
+
+### Removes a component from a PATH-like string
+# Takes the following arguments:
+#  1. the component to remove
+#  2. the PATH-like list of strings to remove $1 from
+#  3. the component separator (optional, default is ':')
+
+## Define variables
+REMOVE="$1"
+LIST="$2"
+if [[ -n "$3" ]]; then
+    SEPARATOR="$3"
+else
+    SEPARATOR=":"
+fi
+
+
+## Remove the component from the list string
+
+# add the separators to the start and end of the list string
+LIST="$SEPARATOR$LIST$SEPARATOR"
+
+# replace the directory with only the separator
+LIST="${LIST/$SEPARATOR$REMOVE$SEPARATOR/$SEPARATOR}"
+
+# remove the delimiters from the start and end of the list string
+LIST="${LIST#:}"
+LIST="${LIST%:}"
+
+
+## Output the modified list
+echo -n "$LIST"
