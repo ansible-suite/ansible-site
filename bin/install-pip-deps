@@ -9,18 +9,8 @@
 source "$(dirname "$(readlink -f "$0")")/activate"
 
 
-## Ensure jq is available
-ensure-jq
-
-
 ## Determine collections and roles path
-
-# config from ansible
-source <(
-    ansible-config dump -f json |
-    jq -r '.[] | select(.name == "COLLECTIONS_PATHS" or .name == "DEFAULT_ROLES_PATH") | "\(.name)=\"\(.value | join(":"))\""'
-)
-
+eval "$(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH | sed 's/\\/\\\\/g; s/"/\"/g')"
 
 ## Scan the collections and roles path for 'requirements.txt' files and install PIP dependencies
 
@@ -36,8 +26,8 @@ pip install -r <(
     for COLLECTIONS_PATH in $COLLECTIONS_PATHS; do
 
         # iterate over possible locations of requirements.txt
-        for REQ_FILE in "$(realpath "$COLLECTIONS_PATH")"/ansible_collections/*/*/requirements.txt; do
-            echo "-r \"$REQ_FILE\""
+        for REQ_FILE in "$COLLECTIONS_PATH"/ansible_collections/*/*/requirements.txt; do
+            echo "-r '$REQ_FILE'"
         done
 
     done
@@ -46,8 +36,8 @@ pip install -r <(
     for ROLES_PATH in $DEFAULT_ROLES_PATH; do
 
         # iterate over possible locations of requirements.txt
-        for REQ_FILE in "$(realpath "$ROLES_PATH")"/*/requirements.txt; do
-            echo "-r \"$REQ_FILE\""
+        for REQ_FILE in "$ROLES_PATH"/*/requirements.txt; do
+            echo "-r '$REQ_FILE'"
         done
 
     done

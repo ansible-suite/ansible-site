@@ -1,0 +1,37 @@
+#!/bin/bash
+
+### Retrieves Ansible config in a shell-sourceable format
+# The arguments to this script represent the config settings to be retrieved
+
+
+## Activate the project environment
+source "$(dirname "$(readlink -f "$0")")/activate"
+
+
+## Ensure jq is available
+ensure-jq
+
+
+## Retrieve the config
+
+# prepare the config settings list
+printf -v CONF_SETTINGS_LIST '"%s",' "$@"
+CONF_SETTINGS_LIST="[${CONF_SETTINGS_LIST%,}]"
+
+# retrieve the config values
+ansible-config dump -f json |
+jq -r --argjson settings "$CONF_SETTINGS_LIST" '
+    # Collect the requested conf settings
+    .[] | select(.name | IN($settings[])) |
+
+    # Print the config in in a shell-sourceable format
+    "\(.name)=\"\(
+        .value |
+        if . == null then
+            ""
+        elif type == "array" then
+            (. | join(":")) 
+        else . end
+    )\""
+
+'
