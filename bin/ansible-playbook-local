@@ -1,0 +1,9 @@
+#!/bin/bash
+
+### Runs 'ansible-playbook' with local connection and hostname limit for the current hostname and localhost
+
+## Activate the project environment
+source "$(dirname "$(readlink -f "$0")")/activate"
+
+## Execute ansible-playbook with added parameters
+exec ansible-playbook --connection local --limit "$(hostname)",localhost "$@"
