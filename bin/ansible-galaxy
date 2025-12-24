@@ -12,7 +12,8 @@ source "$(dirname "$(readlink -f "$0")")/activate"
 ## Skip the version-controlled 'collections/' and 'roles/' directories
 
 # Determine collections and roles path from Ansible configuration
-eval "$(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)"
+source <(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)
+
 
 ## Override collections and roles path
 export ANSIBLE_COLLECTIONS_PATH="$(remove-from-path "$ANSIBLESITE/collections" "$COLLECTIONS_PATHS")"

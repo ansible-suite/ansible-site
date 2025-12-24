@@ -65,6 +65,9 @@ _deactivate() {
 # the ansible-site directory
 ANSIBLESITE="$(realpath "$(dirname "$(readlink -f "$(_get_script_path)")")/..")"
 
+# the Ansible configuration file
+ANSIBLESITE_CONFIG="$ANSIBLESITE/ansible.cfg"
+
 # the Python ANSIBLESITE_VENV directory
 ANSIBLESITE_VENV="$ANSIBLESITE/venv"
 
@@ -114,10 +117,10 @@ if [[ "$PATH:" != "$ANSIBLESITE_PATH:"* ]]; then
 fi
 
 # Set the ANSIBLE_CONFIG variable to the 'ansible.cfg' file
-if [[ "$ANSIBLE_CONFIG" != "$ANSIBLESITE/ansible.cfg" ]]; then
+if [[ "$ANSIBLE_CONFIG" != "$ANSIBLESITE_CONFIG" ]]; then
     _OLD_ANSIBLE_CONFIG="$ANSIBLE_CONFIG"
+    export ANSIBLE_CONFIG="$ANSIBLESITE_CONFIG"
 fi
-export ANSIBLE_CONFIG="$ANSIBLESITE/ansible.cfg"
 
 
 ## Declare the public deactivation function
@@ -125,6 +128,7 @@ deactivate() {
 
     ## Call the internal deactivation function
     _deactivate
+
 
     ## Perform cleanup
 

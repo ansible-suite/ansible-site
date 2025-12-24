@@ -6,6 +6,7 @@
 #  2. the PATH-like list of strings to remove $1 from
 #  3. the component separator (optional, default is ':')
 
+
 ## Define variables
 REMOVE="$1"
 LIST="$2"
