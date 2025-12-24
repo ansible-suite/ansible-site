@@ -3,6 +3,7 @@
 ### A helper script for shell wrappers to call the real command
 # Takes the command-line arguments for running the real command
 
+
 ## Define variables
 BIN="$(dirname "$(readlink -f "$0")")"
 CMD="$1"

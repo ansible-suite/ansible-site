@@ -10,14 +10,19 @@
 source "$(dirname "$(readlink -f "$0")")/activate"
 
 
-## Exit if command is found
-command -v 'jq' > /dev/null && exit 0
+## Define basic variables
 
-
-## Define variables
-
-# the command and its version
+# the command
 COMMAND='jq'
+
+
+## Exit if command is found
+command -v "$COMMAND" > /dev/null && exit 0
+
+
+## Define additional variables for download
+
+# the version of the command
 VERSION="1.8.1"
 
 # the download target
