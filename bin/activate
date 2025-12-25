@@ -53,7 +53,7 @@ _deactivate() {
 
 
     ## Deactivate the Python venv, if it is activated
-    if typeset -f _venv_deactivate > /dev/null; then
+    if declare -f _venv_deactivate > /dev/null; then
         _venv_deactivate
     fi
 
@@ -92,7 +92,7 @@ fi
 ## Activate the Python venv
 
 # Activate only if the venv exists and is not activated by us yet
-if [[ -d "$ANSIBLESITE_VENV" ]] && ! typeset -f _venv_deactivate > /dev/null; then
+if [[ -d "$ANSIBLESITE_VENV" ]] && ! declare -f _venv_deactivate > /dev/null; then
 
     # ensure PATH does not contain custom paths
     # when activating the ANSIBLESITE_VENV
