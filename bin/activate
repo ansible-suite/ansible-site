@@ -22,6 +22,7 @@ fi
 # Helper function to get the current script path in bash and zsh
 _get_script_path() {
     local SOURCE="${BASH_SOURCE[0]}" # bash
+    # shellcheck disable=SC2296
     [[ -z "$SOURCE" ]] && SOURCE="${(%):-%x}" # zsh
     echo "$SOURCE"
 }
@@ -31,18 +32,22 @@ _get_script_path() {
 if [[ "${BASH_VERSINFO+x}" && "$BASH_VERSINFO" -le 3 ]]; then
     source_generated() {
 
+        # Declare variables
+        local script_fd script_temp rc
+
         # Process arguments
         script_fd="$1"
         shift
 
         # Create a private temporary file
-        local script_temp="$(mktemp "${XDG_RUNTIME_DIR-"${TMPDIR-"/tmp"}"}"/bash-source-generated.XXXXXX)"
+        script_temp="$(mktemp "${XDG_RUNTIME_DIR-"${TMPDIR-"/tmp"}"}"/bash-source-generated.XXXXXX)"
 
         # Put the contents of the dynamically-generated file to the temporary file
         cat "$script_fd" > "$script_temp"
 
         # Source the temporary file and save exit status
-        local rc=0
+        rc=0
+        # shellcheck disable=SC1090
         source "$script_temp" "$@" || rc=$?
 
         # Remove the temporary file
@@ -54,6 +59,7 @@ if [[ "${BASH_VERSINFO+x}" && "$BASH_VERSINFO" -le 3 ]]; then
     }
 else
     source_generated() {
+        # shellcheck disable=SC1090
         source "$@"
     }
 fi
@@ -118,6 +124,7 @@ ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_BIN"
 
 # determine the setup mode
 if [[ -n "$1" ]]; then
+    # shellcheck disable=SC2034
     ANSIBLESITE_SETUP_MODE="$1"
 fi
 
@@ -132,6 +139,7 @@ if [[ -d "$ANSIBLESITE_VENV" ]] && ! declare -f _venv_deactivate > /dev/null; th
     _unset_path
 
     # source the activation script
+    # shellcheck disable=SC1091
     source "$ANSIBLESITE_VENV/bin/activate"
 
     # rename the deactivation function to '_venv_deactivate'
