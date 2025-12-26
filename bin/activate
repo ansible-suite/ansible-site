@@ -31,8 +31,6 @@ _get_script_path() {
 if [[ "${BASH_VERSINFO+x}" && "$BASH_VERSINFO" -le 3 ]]; then
     source_generated() {
 
-        #cat "$1"
-
         # Process arguments
         script_fd="$1"
         shift
