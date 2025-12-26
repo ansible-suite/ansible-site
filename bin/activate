@@ -175,6 +175,7 @@ deactivate() {
 
     # unset variables
     unset ANSIBLESITE
+    unset ANSIBLESITE_CONFIG
     unset ANSIBLESITE_VENV
     unset ANSIBLESITE_BIN
     unset ANSIBLESITE_EXTERNAL_BIN
