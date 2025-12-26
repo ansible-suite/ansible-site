@@ -12,7 +12,7 @@ source "$(dirname "$(readlink -f "$0")")/activate"
 ## Skip the version-controlled 'collections/' and 'roles/' directories
 
 # Determine collections and roles path from Ansible configuration
-source <(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)
+source_generated <(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)
 
 
 ## Override collections and roles path
