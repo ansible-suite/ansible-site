@@ -138,7 +138,7 @@ if [[ -d "$ANSIBLESITE_VENV" ]] && ! declare -f _venv_deactivate > /dev/null; th
 
     # rename the deactivation function to '_venv_deactivate'
     # to avoid conflict with the deactivation function of this script
-    source <(declare -f deactivate | sed 's/deactivate/_venv_deactivate/')
+    source_generated <(declare -f deactivate | sed 's/deactivate/_venv_deactivate/')
     unset -f deactivate
 
 fi
