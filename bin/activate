@@ -184,6 +184,7 @@ deactivate() {
 
     # unset internal functions
     unset -f _get_script_path
+    unset -f source_generated
     unset -f _unset_path
     unset -f _deactivate
 
