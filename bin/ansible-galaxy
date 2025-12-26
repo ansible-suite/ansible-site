@@ -5,6 +5,10 @@
 # to skip the version-controlled 'collections/' and 'roles/' directories
 
 
+## Enable stricter execution
+set -eu -o pipefail
+
+
 ## Activate the project environment
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"

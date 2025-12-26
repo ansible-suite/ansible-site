@@ -4,6 +4,10 @@
 # The arguments to this script represent the config settings to be retrieved
 
 
+## Enable stricter execution
+set -eu -o pipefail
+
+
 ## Activate the project environment
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"

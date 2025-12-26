@@ -11,7 +11,7 @@
 
 
 ## Exit if executed directly
-if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+if [[ "${BASH_SOURCE[0]-}" = "$0" ]]; then
     echo "$0: This script must be called with 'source' or '.' from an existing shell." >&2
     exit 1
 fi
@@ -21,7 +21,7 @@ fi
 
 # Helper function to get the current script path in bash and zsh
 _get_script_path() {
-    local SOURCE="${BASH_SOURCE[0]}" # bash
+    local SOURCE="${BASH_SOURCE[0]-}" # bash
     # shellcheck disable=SC2296
     [[ -z "$SOURCE" ]] && SOURCE="${(%):-%x}" # zsh
     echo "$SOURCE"
@@ -123,10 +123,8 @@ ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_BIN"
 ## Process arguments
 
 # determine the setup mode
-if [[ -n "$1" ]]; then
-    # shellcheck disable=SC2034
-    ANSIBLESITE_SETUP_MODE="$1"
-fi
+# shellcheck disable=SC2034
+ANSIBLESITE_SETUP_MODE="${1-}"
 
 
 ## Activate the Python venv
@@ -153,12 +151,12 @@ fi
 ## Modify environment variables
 
 # Add custom directories to PATH
-if [[ "$PATH:" != "$ANSIBLESITE_PATH:"* ]]; then
+if [[ "${PATH=}:" != "$ANSIBLESITE_PATH:"* ]]; then
     export PATH="$ANSIBLESITE_PATH:$PATH"
 fi
 
 # Set the ANSIBLE_CONFIG variable to the 'ansible.cfg' file
-if [[ "$ANSIBLE_CONFIG" != "$ANSIBLESITE_CONFIG" ]]; then
+if [[ "${ANSIBLE_CONFIG=}" != "$ANSIBLESITE_CONFIG" ]]; then
     _OLD_ANSIBLE_CONFIG="$ANSIBLE_CONFIG"
     export ANSIBLE_CONFIG="$ANSIBLESITE_CONFIG"
 fi

@@ -6,6 +6,10 @@
 # Supports only Linux OS and the amd64, i386, arm64 and armhf architectures.
 
 
+## Enable stricter execution
+set -eu -o pipefail
+
+
 ## Activate the project environment
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"
@@ -56,8 +60,8 @@ DOWNLOAD_URL="https://github.com/jqlang/jq/releases/download/jq-$VERSION/jq-linu
 # create parent directory for the download target
 mkdir -p "$(dirname "$TARGET")"
 
-# download the binary to a .part file, exit if not successful
-wget "$DOWNLOAD_URL" -O "$TARGET_PART" || exit
+# download the binary to a .part file
+wget "$DOWNLOAD_URL" -O "$TARGET_PART"
 
 # make the file executable
 chmod +x "$TARGET_PART"

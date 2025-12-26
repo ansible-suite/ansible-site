@@ -5,6 +5,10 @@
 # and installs PIP dependencies from these files
 
 
+## Enable stricter execution
+set -eu -o pipefail
+
+
 ## Activate the project environment
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"
