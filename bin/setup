@@ -10,6 +10,10 @@
 # to specify the setup mode.
 
 
+## Enable stricter execution
+set -eu -o pipefail
+
+
 ## Define the 'bin' directory
 BIN="$(dirname "$(readlink -f "$0")")"
 
@@ -17,7 +21,7 @@ BIN="$(dirname "$(readlink -f "$0")")"
 ## Set up the Ansible environment
 
 # set up Python venv with dependencies
-"$BIN/setup-venv" "$1"
+"$BIN/setup-venv" "${1-}"
 
 # download Ansible collections and roles using Ansible Galaxy
 # and install PIP dependencies required by them

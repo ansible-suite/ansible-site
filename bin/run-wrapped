@@ -4,6 +4,10 @@
 # Takes the command-line arguments for running the real command
 
 
+## Enable stricter execution
+set -eu -o pipefail
+
+
 ## Define variables
 BIN="$(dirname "$(readlink -f "$0")")"
 CMD="$1"

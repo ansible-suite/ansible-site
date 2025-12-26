@@ -8,6 +8,10 @@
 #     using the ANSIBLESITE_SETUP_MODE env variable or the first command-line argument
 
 
+## Enable stricter execution
+set -eu -o pipefail
+
+
 ## Activate the project environment
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"
