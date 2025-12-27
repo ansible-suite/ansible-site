@@ -1,3 +1,6 @@
+# .ansible directory
+.ansible/
+
 # Python venv
 venv/
 
