@@ -26,6 +26,7 @@ CONF_SETTINGS_LIST="[${CONF_SETTINGS_LIST%,}]"
 # retrieve the config values
 ansible-config dump -f json |
 jq -r --argjson settings "$CONF_SETTINGS_LIST" '
+
     # Collect the requested conf settings
     .[] | select(.name | IN($settings[])) |
 

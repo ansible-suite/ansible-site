@@ -19,11 +19,11 @@ source "$(dirname "$(readlink -f "$0")")/activate"
 # Determine collections and roles path from Ansible configuration
 source_generated <(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)
 
-
-## Override collections and roles path
+# Override collections and roles path
 ANSIBLE_COLLECTIONS_PATH="$(remove-from-path "$ANSIBLESITE/collections" "$COLLECTIONS_PATHS")"
 ANSIBLE_ROLES_PATH="$(remove-from-path "$ANSIBLESITE/roles" "$DEFAULT_ROLES_PATH")"
 export ANSIBLE_COLLECTIONS_PATH ANSIBLE_ROLES_PATH
+
 
 ## Execute the real 'ansible-galaxy' command
 run-wrapped ansible-galaxy "$@"
