@@ -36,7 +36,7 @@ TARGET_PART="$TARGET.part"
 
 # OS and architecture
 if [[ "$(uname -s)" != 'Linux' ]]; then
-    echo "$0: Unsupported OS. Install '$COMMAND' manually."
+    echo "$0: Unsupported OS. Install '$COMMAND' manually." >&2
     exit 1
 fi
 
@@ -46,7 +46,7 @@ case "$(uname -m)" in
     aarch64)    ARCH="arm64"    ;;
     armv7l)     ARCH="armhf"    ;;
     *)          
-        echo "$0: Unsupported architecture. Install '$COMMAND' manually."
+        echo "$0: Unsupported architecture. Install '$COMMAND' manually." >&2
         exit 1
         ;;
 esac
