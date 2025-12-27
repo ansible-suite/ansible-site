@@ -13,8 +13,9 @@
 # so other user startup scripts are run from there as the custom functionality has already been injected
 # in $VSCODE_ZDOTDIR.
 
+
 ## Define the workspace directory
-ANSIBLESITE_WORKSPACE=$(realpath $(dirname ${(%):-%x})/..)
+ANSIBLESITE=$(realpath $(dirname ${(%):-%x})/..)
 
 
 ## Set the default of user ZDOTDIR

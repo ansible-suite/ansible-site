@@ -18,4 +18,4 @@
 
 
 ## Source the environment activation script
-. $ANSIBLESITE_WORKSPACE/bin/activate
+. $ANSIBLESITE/bin/activate

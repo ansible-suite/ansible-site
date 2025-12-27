@@ -1,8 +1,11 @@
+# shellcheck shell=bash
+
 ### A custom .bashrc for ansible-site VS Code integration
 # The script ensures the environment activation script is run
 # after sourcing the VS Code Terminal Shell Integration script,
 # which sources the default startup scripts in $HOME
 # before installing the integration itself.
+
 
 ## Install the VS Code Terminal Shell Integration
 
@@ -15,11 +18,14 @@ fi
 
 # Pretend injection by VS Code
 # so that the shell integration script sources scripts in default locations
+# shellcheck disable=SC2034
 VSCODE_INJECTION=1
 
 # Source the install script located by calling 'code'
+# shellcheck disable=SC1090
 . "$("$CODE" --locate-shell-integration-path bash)"
 
 
 ## Source the environment activation script
+# shellcheck disable=SC1091
 . "$(dirname "${BASH_SOURCE[0]}")/../bin/activate"
