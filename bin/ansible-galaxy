@@ -26,4 +26,4 @@ export ANSIBLE_COLLECTIONS_PATH ANSIBLE_ROLES_PATH
 
 
 ## Execute the real 'ansible-galaxy' command
-run-wrapped ansible-galaxy "$@"
+exec run-wrapped ansible-galaxy "$@"
