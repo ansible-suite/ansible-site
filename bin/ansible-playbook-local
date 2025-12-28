@@ -7,10 +7,5 @@
 set -eu -o pipefail
 
 
-## Activate the project environment
-# shellcheck disable=SC1091
-source "$(dirname "$(readlink -f "$0")")/activate"
-
-
 ## Execute ansible-playbook with added parameters
 exec ansible-playbook --connection local --limit "$(hostname)",localhost "$@"
