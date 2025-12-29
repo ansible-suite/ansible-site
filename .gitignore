@@ -1,6 +1,10 @@
 # .ansible directory
 .ansible/
 
+# dotenv local files
+.env.local
+.env.*.local
+
 # Python venv
 venv/
 
