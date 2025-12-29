@@ -103,7 +103,7 @@ _deactivate() {
 }
 
 
-## Define variables
+# Define basic variables
 
 # the workspace directory
 ANSIBLESITE="$(realpath "$(dirname "$(readlink -f "$(_get_script_path)")")/..")"
@@ -132,6 +132,20 @@ if [[ -n "${1-}" ]]; then
     # shellcheck disable=SC2034
     ANSIBLESITE_PROFILE="$1"
 fi
+
+
+## Load variables from .env files
+for _VARS_SETUP_MODE in "" ".$ANSIBLESITE_PROFILE"; do
+    for _VARS_LOCALNESS in "" ".local"; do
+        _VARS_PATH="$ANSIBLESITE/.env$_VARS_SETUP_MODE$_VARS_LOCALNESS"
+        if [[ -f "$_VARS_PATH" ]]; then
+            # shellcheck disable=SC1090
+            source "$_VARS_PATH"
+        fi
+    done
+done
+unset _VARS_LOCALNESS
+unset _VARS_PATH
 
 
 ## Activate the Python venv
