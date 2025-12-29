@@ -4,8 +4,8 @@
 # Performs the following actions:
 #   - creates the venv if it does not exist yet
 #   - installs and/or upgrades PIP packages from 'requirements.txt',
-#     or 'requirements_$ANSIBLESITE_SETUP_MODE' if the setup mode is defined
-#     using the ANSIBLESITE_SETUP_MODE env variable or the first command-line argument
+#     or 'requirements_$ANSIBLESITE_PROFILE' if the setup mode is defined
+#     using the ANSIBLESITE_PROFILE env variable or the first command-line argument
 
 
 ## Enable stricter execution
@@ -31,8 +31,8 @@ source "$ANSIBLESITE_VENV/bin/activate"
 ## Install PIP packages from a requirements file
 
 # get the file name
-if [[ -n "$ANSIBLESITE_SETUP_MODE" ]]; then
-    REQUIREMENTS_FILE="requirements_$ANSIBLESITE_SETUP_MODE.txt"
+if [[ -n "$ANSIBLESITE_PROFILE" ]]; then
+    REQUIREMENTS_FILE="requirements_$ANSIBLESITE_PROFILE.txt"
 else
     REQUIREMENTS_FILE="requirements.txt"
 fi

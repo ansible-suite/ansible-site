@@ -127,10 +127,10 @@ ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_BIN"
 ## Process arguments
 
 # determine the setup mode
-echo "${ANSIBLESITE_SETUP_MODE=}" >/dev/null
+echo "${ANSIBLESITE_PROFILE=}" >/dev/null
 if [[ -n "${1-}" ]]; then
     # shellcheck disable=SC2034
-    ANSIBLESITE_SETUP_MODE="$1"
+    ANSIBLESITE_PROFILE="$1"
 fi
 
 
@@ -185,7 +185,7 @@ deactivate() {
     unset ANSIBLESITE_BIN
     unset ANSIBLESITE_EXTERNAL_BIN
     unset ANSIBLESITE_PATH
-    unset ANSIBLESITE_SETUP_MODE
+    unset ANSIBLESITE_PROFILE
 
     # unset public functions
     unset -f source_generated
