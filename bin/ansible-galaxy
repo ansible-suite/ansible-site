@@ -9,7 +9,7 @@
 set -eu -o pipefail
 
 
-## Activate the project environment
+## Activate the project shell environment
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"
 

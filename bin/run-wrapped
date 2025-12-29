@@ -17,7 +17,7 @@ shift
 
 ## Run the command from other directory than $BIN
 
-# Determine the real command's path with modified PATH variable
+# Determine the path of the real command with modified PATH variable
 CMD_PATH="$(
     PATH=$("$BIN/remove-from-path" "$BIN" "$PATH")
     command -v "$CMD"
