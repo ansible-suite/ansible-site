@@ -25,7 +25,7 @@ COMMAND='jq'
 command -v "$COMMAND" > /dev/null && exit 0
 
 
-## Define additional variables for download
+## Define additional variables for download and perform checks
 
 # the version of the command
 VERSION="1.8.1"
@@ -34,12 +34,13 @@ VERSION="1.8.1"
 TARGET="$ANSIBLESITE_EXTERNAL_BIN/$COMMAND"
 TARGET_PART="$TARGET.part"
 
-# OS and architecture
+# the OS
 if [[ "$(uname -s)" != 'Linux' ]]; then
     echo "$0: Unsupported OS. Install '$COMMAND' manually." >&2
     exit 1
 fi
 
+# the architecture
 case "$(uname -m)" in
     x86_64)     ARCH="amd64"    ;;
     i386|i686)  ARCH="i386"     ;;
@@ -57,7 +58,7 @@ DOWNLOAD_URL="https://github.com/jqlang/jq/releases/download/jq-$VERSION/jq-linu
 
 ## Download the standalone binary
 
-# create parent directory for the download target
+# ensure parent directory exists for the download target
 mkdir -p "$(dirname "$TARGET")"
 
 # download the binary to a .part file

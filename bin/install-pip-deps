@@ -9,12 +9,12 @@
 set -eu -o pipefail
 
 
-## Activate the project environment
+## Activate the project shell environment
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"
 
 
-## Determine collections and roles path
+## Get collections and roles path from Ansible configuration
 source_generated <(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)
 
 

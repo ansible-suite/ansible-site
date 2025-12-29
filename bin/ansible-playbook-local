@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### Runs 'ansible-playbook' with local connection and hostname limit for the current hostname and localhost
+### Runs 'ansible-playbook' with local connection and hostname limit for the current hostname and 'localhost'
 
 
 ## Enable stricter execution

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### Sets up the Ansible environment
+### Sets up the Ansible workspace
 # Performs the following actions:
 #   - runs 'setup-venv' to set up Python venv with dependencies
 #   - runs 'setup-galaxy' to download Ansible collections and roles using Ansible Galaxy
@@ -18,7 +18,7 @@ set -eu -o pipefail
 BIN="$(dirname "$(readlink -f "$0")")"
 
 
-## Set up the Ansible environment
+## Set up the Ansible workspace
 
 # set up Python venv with dependencies
 "$BIN/setup-venv" "${1-}"

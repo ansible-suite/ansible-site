@@ -3,7 +3,7 @@
 # and adds packages for development of Ansible content
 
 # The requirements specified in this file should be installed
-# in cases when using a venv from this environment to develop with Ansible.
+# in cases when using the workspace to develop with Ansible.
 
 
 ## The common requirements
