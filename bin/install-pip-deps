@@ -28,13 +28,18 @@ pip install -r <(
     shopt -s nullglob
     IFS=:
 
+    # define a function for outputting the requirements file reference
+    print_req() {
+        printf -- "-r '%s'\n" "$1"
+    }
+
     # iterate over collections search paths
     # shellcheck disable=SC2153
     for COLLECTIONS_PATH in $COLLECTIONS_PATHS; do
 
         # iterate over possible locations of requirements.txt
         for REQ_FILE in "$COLLECTIONS_PATH"/ansible_collections/*/*/requirements.txt; do
-            echo "-r '$REQ_FILE'"
+            print_req "$REQ_FILE"
         done
 
     done
@@ -44,7 +49,7 @@ pip install -r <(
 
         # iterate over possible locations of requirements.txt
         for REQ_FILE in "$ROLES_PATH"/*/requirements.txt; do
-            echo "-r '$REQ_FILE'"
+            print_req "$REQ_FILE"
         done
 
     done
