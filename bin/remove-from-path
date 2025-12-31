@@ -11,14 +11,10 @@
 set -eu -o pipefail
 
 
-## Define variables
+## Process arguments
 REMOVE="$1"
 LIST="$2"
-if [[ "${3+x}" ]]; then
-    SEPARATOR="$3"
-else
-    SEPARATOR=":"
-fi
+SEPARATOR="${3:-:}"
 
 
 ## Remove the component from the list string
@@ -26,7 +22,7 @@ fi
 # add the separators to the start and end of the list string
 LIST="$SEPARATOR$LIST$SEPARATOR"
 
-# replace the directory with only the separator
+# replace the component surrounded by separators with a single separator
 LIST="${LIST/$SEPARATOR$REMOVE$SEPARATOR/$SEPARATOR}"
 
 # remove the delimiters from the start and end of the list string
