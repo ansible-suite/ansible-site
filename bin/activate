@@ -153,6 +153,11 @@ _deactivate() {
     # Revert ANSIBLE_CONFIG
     _revert_saved_var ANSIBLE_CONFIG
 
+    # Revert ANSIBLE_VAULT_PASSWORD_FILE
+    if [[ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]]; then
+        _revert_saved_var ANSIBLE_VAULT_PASSWORD_FILE
+    fi
+
 
     ## Deactivate the Python venv, if it is activated
     if declare -f _venv_deactivate > /dev/null; then
@@ -181,6 +186,9 @@ ANSIBLESITE_EXTERNAL_BIN="$ANSIBLESITE/external_bin"
 
 # the directories from the workspace to add to PATH
 ANSIBLESITE_PATH="$ANSIBLESITE_BIN:$ANSIBLESITE_EXTERNAL_BIN"
+
+# the vault password file of the workspace
+ANSIBLESITE_VAULT_PASSWORD_FILE="$ANSIBLESITE/.vault_pass"
 
 
 ## Process arguments
@@ -239,6 +247,15 @@ fi
 _save_and_set_var ANSIBLE_CONFIG "$ANSIBLESITE_CONFIG"
 export ANSIBLE_CONFIG
 
+# Set the ANSIBLE_VAULT_PASSWORD_FILE to the value for this workspace ($ANSIBLESITE_VAULT_PASSWORD_FILE)
+# only if the file is present
+if [[ -f "$ANSIBLESITE_VAULT_PASSWORD_FILE" ]]; then
+    _save_and_set_var ANSIBLE_VAULT_PASSWORD_FILE "$ANSIBLESITE_VAULT_PASSWORD_FILE"
+    export ANSIBLE_VAULT_PASSWORD_FILE
+elif [[ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]]; then
+    _revert_saved_var ANSIBLE_VAULT_PASSWORD_FILE
+fi
+
 
 ## Declare the public deactivation function
 deactivate() {
@@ -260,6 +277,7 @@ deactivate() {
     unset ANSIBLESITE_BIN
     unset ANSIBLESITE_EXTERNAL_BIN
     unset ANSIBLESITE_PATH
+    unset ANSIBLESITE_VAULT_PASSWORD_FILE
     unset ANSIBLESITE_PROFILE
 
     # unset public functions
