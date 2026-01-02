@@ -218,7 +218,7 @@ unset _VARS_PATH
 ## Activate the Python venv
 
 # Activate only if the venv exists and is not activated by us yet
-if [[ -d "$ANSIBLESITE_VENV" ]] && ! declare -f _venv_deactivate > /dev/null; then
+if [[ -d "$ANSIBLESITE_VENV" && "${VIRTUAL_ENV:-}" != "$ANSIBLESITE_VENV" ]]; then
 
     # ensure PATH does not contain custom paths
     # when activating the venv
