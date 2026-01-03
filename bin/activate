@@ -142,6 +142,14 @@ _unset_path() {
     fi
 }
 
+# Function to load variable files
+_load_vars() {
+    if [[ -e "$1" ]]; then
+        # shellcheck disable=SC1090
+        source "$1"
+    fi
+}
+
 # Internal deactivation function
 _deactivate() {
 
@@ -205,17 +213,12 @@ fi
 
 
 ## Load variables from .env files
-for _VARS_SETUP_MODE in "" ".$ANSIBLESITE_PROFILE"; do
-    for _VARS_LOCALNESS in "" ".local"; do
-        _VARS_PATH="$ANSIBLESITE/.env$_VARS_SETUP_MODE$_VARS_LOCALNESS"
-        if [[ -f "$_VARS_PATH" ]]; then
-            # shellcheck disable=SC1090
-            source "$_VARS_PATH"
-        fi
-    done
-done
-unset _VARS_LOCALNESS
-unset _VARS_PATH
+_load_vars "$ANSIBLESITE/.env"
+_load_vars "$ANSIBLESITE/.env.local"
+if [[ -n "$ANSIBLESITE_PROFILE" ]]; then
+    _load_vars "$ANSIBLESITE/.env.$ANSIBLESITE_PROFILE"
+    _load_vars "$ANSIBLESITE/.env.$ANSIBLESITE_PROFILE.local"
+fi
 
 
 ## Activate the Python venv
