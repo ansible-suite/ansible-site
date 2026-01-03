@@ -10,33 +10,18 @@
 # In addition, it declares a deactivation function which reverts these actions.
 
 
-## Get information about the shell environment
+## Ensure we are running in the correct environment
 
-# Determine the shell the script is running in
-if [[ "${BASH_VERSINFO+x}" ]]; then
-    _ANSIBLESITE_SHELL=bash
-elif [[ "${ZSH_VERSION+x}" ]]; then
-    _ANSIBLESITE_SHELL=zsh
-else
-    echo "This environment activation script supports running in bash and zsh." >&2
-    exit 1
-fi
-
-# Determine the path of this script
-case "$_ANSIBLESITE_SHELL" in
-    bash)
-        _ANSIBLESITE_SCRIPT="${BASH_SOURCE[0]}"
-        ;;
-    zsh)
-        # shellcheck disable=SC2296
-        _ANSIBLESITE_SCRIPT="${(%):-%x}"
-esac
-
-
-## Exit if executed directly
+# Fail if executed directly
 # assuming running in bash in that case
 if [[ "${BASH_SOURCE[0]:-}" = "$0" ]]; then
     echo "$0: This script must be called with 'source' or '.' from an existing shell." >&2
+    exit 1
+fi
+
+# Fail if we are running in an unsupported shell
+if [[ -z "${BASH_VERSINFO+x}${ZSH_VERSION+x}" ]]; then
+    echo "This environment activation script supports running in bash and zsh." >&2
     exit 1
 fi
 
@@ -45,7 +30,7 @@ fi
 
 # Helper function to add compatibility of sourcing dynamically-generated shell code
 # in older bash version
-if [[ "$_ANSIBLESITE_SHELL" = 'bash' && "$BASH_VERSINFO" -le 3 ]]; then
+if [[ "${BASH_VERSINFO+x}" && "$BASH_VERSINFO" -le 3 ]]; then
     source_generated() {
 
         # Declare variables
@@ -83,94 +68,50 @@ fi
 
 ## Declare internal functions
 
-# Helper functions to get and set a variable using indirect expansion
-case "$_ANSIBLESITE_SHELL" in
-    bash)
-        _get_indirect() {
-            printf '%s' "${!1:-}"
-        }
-        _set_indirect() {
-            printf -v "$1" '%s' "$2"
-        }
-        ;;
-    zsh)
-        _get_indirect() {
-            # shellcheck disable=SC2296
-            print "${(P)${1}}"
-        }
-        _set_indirect() {
-            typeset -g "$1=$2"
-        }
-esac
-
-# Function that sets a variable and keeps the old value
-# in a variable prefixed with _OLD_
-_save_and_set_var() {
-    local NAME OLD_NAME OLD_VAL NEW_VAL
-    NAME="$1"
-    OLD_NAME="_OLD_$NAME"
-    OLD_VAL="$(_get_indirect "$NAME")"
-    NEW_VAL="$2"
-    if [[ "$OLD_VAL" != "$NEW_VAL" ]]; then
-        _set_indirect "$OLD_NAME" "$OLD_VAL"
-        _set_indirect "$NAME" "$NEW_VAL"
-    fi
-}
-
-# Function that reverts a variable to its old value
-# from the variable prefixed with _OLD_
-_revert_saved_var() {
-    local NAME OLD_NAME OLD_VAL
-    NAME="$1"
-    OLD_NAME="_OLD_$NAME"
-    OLD_VAL="$(_get_indirect "$OLD_NAME")"
-    if [[ -z "$OLD_VAL" ]]; then
-        unset "$NAME"
-    else
-        _set_indirect "$NAME" "$OLD_VAL"
-    fi
-    unset "$OLD_NAME"
-}
-
-# Function that removes custom directories from PATH
-_unset_path() {
-    if [[ "$PATH:" == "$ANSIBLESITE_PATH:"* ]]; then
-        PATH="$PATH:"
-        PATH="${PATH//$ANSIBLESITE_PATH:/}"
-        PATH="${PATH%:}"
-        export PATH
-    fi
-}
-
 # Internal deactivation function
 _deactivate() {
 
     ## Revert modified environment variables
 
-    # Remove custom directories from PATH
-    _unset_path
-
-    # Revert ANSIBLE_CONFIG
-    _revert_saved_var ANSIBLE_CONFIG
-
-    # Revert ANSIBLE_VAULT_PASSWORD_FILE
-    if [[ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]]; then
-        _revert_saved_var ANSIBLE_VAULT_PASSWORD_FILE
+    # Revert PATH
+    if [[ -n "${_OLD_ANSIBLESITE_PATH+x}" ]]; then
+        PATH="${_OLD_ANSIBLESITE_PATH:-}"
+        export PATH
     fi
+    unset _OLD_ANSIBLESITE_PATH
 
-
-    ## Deactivate the Python venv, if it is activated
-    if declare -f _venv_deactivate > /dev/null; then
-        _venv_deactivate
+    # Revert ANSIBLE_CONFIG, unset if empty string
+    if [[ -n "${_OLD_ANSIBLE_CONFIG+x}" ]]; then
+        ANSIBLE_CONFIG="${_OLD_ANSIBLE_CONFIG:-}"
+        export ANSIBLE_CONFIG
     fi
+    if [[ -z "${ANSIBLE_CONFIG:-}" ]]; then
+        unset ANSIBLE_CONFIG
+    fi
+    unset _OLD_ANSIBLE_CONFIG
+
+    # Revert ANSIBLE_VAULT_PASSWORD_FILE, unset if empty string
+    if [[ -n "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]]; then
+        ANSIBLE_VAULT_PASSWORD_FILE="${_OLD_ANSIBLE_VAULT_PASSWORD_FILE:-}"
+        export ANSIBLE_VAULT_PASSWORD_FILE
+    fi
+    if [[ -z "${ANSIBLE_VAULT_PASSWORD_FILE:-}" ]]; then
+        unset ANSIBLE_VAULT_PASSWORD_FILE
+    fi
+    unset _OLD_ANSIBLE_VAULT_PASSWORD_FILE
 
 }
 
 
-# Define variables
+## Deactivate a previously activated environment
+_deactivate
+
+
+## Define variables
 
 # the workspace directory
-ANSIBLESITE="$(realpath "$(dirname "$(readlink -f "$_ANSIBLESITE_SCRIPT")")/..")"
+# shellcheck disable=SC2296
+ANSIBLESITE="$(realpath "$(dirname "$(readlink -f "${BASH_SOURCE:-"${(%):-%x}"}")")/..")"
 
 # the Ansible configuration file of the workspace
 ANSIBLESITE_CONFIG="$ANSIBLESITE/ansible.cfg"
@@ -217,18 +158,14 @@ unset _VARS_PATH
 
 ## Activate the Python venv
 
-# Activate only if the venv exists and is not activated by us yet
-if [[ -d "$ANSIBLESITE_VENV" && "${VIRTUAL_ENV:-}" != "$ANSIBLESITE_VENV" ]]; then
-
-    # ensure PATH does not contain custom paths
-    # when activating the venv
-    _unset_path
+# Activate only if the venv exists
+if [[ -d "$ANSIBLESITE_VENV" ]]; then
 
     # source the activation script
     # shellcheck disable=SC1091
     source "$ANSIBLESITE_VENV/bin/activate"
 
-    # rename the deactivation function to '_venv_deactivate'
+    # rename the venv deactivation function to '_venv_deactivate'
     # to avoid conflict with the deactivation function of this script
     source_generated <(declare -f deactivate | sed 's/deactivate/_venv_deactivate/')
     unset -f deactivate
@@ -239,21 +176,21 @@ fi
 ## Modify environment variables
 
 # Add directories with executables of this workspace to PATH
-if [[ "${PATH:=}:" != "$ANSIBLESITE_PATH:"* ]]; then
-    export PATH="$ANSIBLESITE_PATH:$PATH"
-fi
+_OLD_ANSIBLESITE_PATH="${PATH:-}"
+PATH="$ANSIBLESITE_PATH:${PATH:-}"
+export PATH
 
 # Set the ANSIBLE_CONFIG variable to the value for this workspace ($ANSIBLESITE_CONFIG)
-_save_and_set_var ANSIBLE_CONFIG "$ANSIBLESITE_CONFIG"
+_OLD_ANSIBLE_CONFIG="${ANSIBLE_CONFIG:-}"
+ANSIBLE_CONFIG="$ANSIBLESITE_CONFIG"
 export ANSIBLE_CONFIG
 
 # Set the ANSIBLE_VAULT_PASSWORD_FILE to the value for this workspace ($ANSIBLESITE_VAULT_PASSWORD_FILE)
 # only if the file is present
 if [[ -f "$ANSIBLESITE_VAULT_PASSWORD_FILE" ]]; then
-    _save_and_set_var ANSIBLE_VAULT_PASSWORD_FILE "$ANSIBLESITE_VAULT_PASSWORD_FILE"
+    _OLD_ANSIBLE_VAULT_PASSWORD_FILE="${ANSIBLE_VAULT_PASSWORD_FILE:-}"
+    ANSIBLE_VAULT_PASSWORD_FILE="$ANSIBLESITE_VAULT_PASSWORD_FILE"
     export ANSIBLE_VAULT_PASSWORD_FILE
-elif [[ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]]; then
-    _revert_saved_var ANSIBLE_VAULT_PASSWORD_FILE
 fi
 
 
@@ -263,8 +200,12 @@ deactivate() {
     ## Call the internal deactivation function
     _deactivate
 
+    ## Deactivate the Python venv, if it is activated by us
+    if declare -f _venv_deactivate > /dev/null; then
+        _venv_deactivate
+    fi
 
-    ## Perform cleanup
+    ## Perform cleanup 
 
     # unset internal variables
     unset _ANSIBLESITE_SHELL
@@ -284,11 +225,6 @@ deactivate() {
     unset -f source_generated
 
     # unset internal functions
-    unset -f _get_indirect
-    unset -f _set_indirect
-    unset -f _save_and_set_var
-    unset -f _revert_saved_var
-    unset -f _unset_path
     unset -f _deactivate
 
     # unset this deactivation function
