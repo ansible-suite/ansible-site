@@ -4,24 +4,30 @@
 # Performs the following actions:
 #   - runs 'setup-venv' to set up Python venv with dependencies
 #   - runs 'setup-galaxy' to download Ansible collections and roles using Ansible Galaxy
-#     and to install PIP dependencies required by them
-# This script passes the first command-line argument to 'setup-venv'
-# to specify the setup mode.
+#     and to install PIP dependencies required by them if using our venv
 
 
 ## Enable stricter execution
 set -eu -o pipefail
 
 
-## Define the 'bin' directory
-BIN="$(dirname "$(readlink -f "$0")")"
+## Activate the project shell environment
+
+# suppress the warning about missing venv
+export ANSIBLESITE_SUPPRESS_VENV_WARNING=1
+
+# source the activation script
+# shellcheck disable=SC1091
+source "$(dirname "$(readlink -f "$0")")/activate"
 
 
 ## Set up the Ansible workspace
 
-# set up Python venv with dependencies
-"$BIN/setup-venv" "${1:-}"
+# set up Python venv with dependencies if enabled
+if [[ "$ANSIBLESITE_USE_VENV" -eq 1 ]]; then
+    setup-venv
+fi
 
 # download Ansible collections and roles using Ansible Galaxy
-# and install PIP dependencies required by them
-"$BIN/setup-galaxy"
+# and install PIP dependencies required by them if using our venv
+setup-galaxy
