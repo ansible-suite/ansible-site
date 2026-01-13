@@ -42,4 +42,16 @@
     // Configure the Ansible extension to use the Python interpreter from the venv
     "ansible.python.interpreterPath": "${workspaceFolder}/venv/bin/python",
 
+
+    /* Language mode */
+
+    // Set the language mode for Ansible-related files
+    "files.associations": {
+        "**/playbooks/**/*.{yml,yaml}": "ansible",
+        "**/inventory/**/*.{yml,yaml}": "ansible",
+        "**/inventory/**/*": "ini",
+        "**/roles/*/{tasks,handlers,vars,defaults,meta}/**/*.{yml,yaml}": "ansible",
+        "**/roles/*/templates/**/*.j2": "ansible-jinja"
+    }
+
 }
