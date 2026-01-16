@@ -255,7 +255,7 @@ if [[ "$ANSIBLESITE_USE_VENV" -eq 1 ]]; then
             cat <<EOF >&2
 $_ANSIBLESITE_SCRIPT: WARNING: This workspace is configured to use its own Python venv,
 please set it up using the 'setup' or 'setup-venv' scripts,
-then re-activate the environment by calling 'source $_ANSIBLESITE_SCRIPT'."
+then re-activate the environment by calling 'source $_ANSIBLESITE_SCRIPT'.
 EOF
         fi
 
