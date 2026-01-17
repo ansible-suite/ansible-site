@@ -96,7 +96,7 @@ case "$_ANSIBLESITE_SHELL" in
     zsh)
         _get_indirect() {
             # shellcheck disable=SC2296
-            print "${(P)${1}}"
+            print "${(P)${1}:-}"
         }
         _set_indirect() {
             typeset -g "$1=$2"
@@ -321,6 +321,7 @@ deactivate() {
     unset -f _save_and_set_var
     unset -f _revert_saved_var
     unset -f _unset_path
+    unset -f _load_vars
     unset -f _deactivate
 
     # unset this deactivation function
