@@ -40,7 +40,7 @@
     /* Ansible extension */
 
     // Configure the Ansible extension to use the Python interpreter from the venv
-    "ansible.python.interpreterPath": "${workspaceFolder}/venv/bin/python",
+    "ansible.python.interpreterPath": "${workspaceFolder}/.venv/bin/python",
 
 
     /* Language mode */
