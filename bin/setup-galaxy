@@ -33,8 +33,11 @@ ansible-galaxy role install -r "$REQUIREMENTS" --force
 
 ## Install PIP dependencies of collections and roles
 
-# check if the venv of the workspace is active
-if [[ "${VIRTUAL_ENV+x}" && "$VIRTUAL_ENV" = "$(realpath "$ANSIBLESITE_VENV" 2> /dev/null || true)" ]]; then
+# only install if enabled and the active venv is the venv of the workspace
+if [[
+        "${ANSIBLESITE_INSTALL_PIP_DEPS:-0}" -eq 1 && \
+        "${VIRTUAL_ENV+x}" && "$VIRTUAL_ENV" = "$(realpath "$ANSIBLESITE_VENV" 2> /dev/null || true)" \
+    ]]; then
 
     # call 'install-pip-deps' to install PIP dependencies
     # of collections and roles
