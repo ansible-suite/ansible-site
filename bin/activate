@@ -187,7 +187,7 @@ ANSIBLESITE_CONFIG="$ANSIBLESITE/ansible.cfg"
 ANSIBLESITE_USE_VENV=1
 
 # the Python venv directory of the workspace
-ANSIBLESITE_VENV="$ANSIBLESITE/venv"
+ANSIBLESITE_VENV="$ANSIBLESITE/.venv"
 
 # the directory with scripts
 ANSIBLESITE_BIN="$ANSIBLESITE/bin"
