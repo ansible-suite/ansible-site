@@ -1,5 +1,12 @@
+# .ansible directory
+.ansible/
+
+# dotenv local files
+.env.local
+.env.*.local
+
 # Python venv
-venv/
+.venv/
 
 # External bin directory
 external_bin/

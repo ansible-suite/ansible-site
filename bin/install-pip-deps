@@ -5,12 +5,18 @@
 # and installs PIP dependencies from these files
 
 
-## Activate the project environment
+## Enable stricter execution
+set -eu -o pipefail
+
+
+## Activate the project shell environment
+# shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/activate"
 
 
-## Determine collections and roles path
-eval "$(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH | sed 's/\\/\\\\/g; s/"/\"/g')"
+## Get collections and roles path from Ansible configuration
+source_generated <(get-ansible-config COLLECTIONS_PATHS DEFAULT_ROLES_PATH)
+
 
 ## Scan the collections and roles path for 'requirements.txt' files and install PIP dependencies
 
@@ -22,12 +28,18 @@ pip install -r <(
     shopt -s nullglob
     IFS=:
 
+    # define a function for outputting the requirements file reference
+    print_req() {
+        printf -- "-r '%s'\n" "$1"
+    }
+
     # iterate over collections search paths
+    # shellcheck disable=SC2153
     for COLLECTIONS_PATH in $COLLECTIONS_PATHS; do
 
         # iterate over possible locations of requirements.txt
         for REQ_FILE in "$COLLECTIONS_PATH"/ansible_collections/*/*/requirements.txt; do
-            echo "-r '$REQ_FILE'"
+            print_req "$REQ_FILE"
         done
 
     done
@@ -37,8 +49,9 @@ pip install -r <(
 
         # iterate over possible locations of requirements.txt
         for REQ_FILE in "$ROLES_PATH"/*/requirements.txt; do
-            echo "-r '$REQ_FILE'"
+            print_req "$REQ_FILE"
         done
 
     done
+
 )
