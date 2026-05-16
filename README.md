@@ -23,10 +23,10 @@ For convenient development of Ansible content, the following is recommended in a
 
 
 ## Getting started
->   [!IMPORTANT]
->   The [ansible-suite/ansible-site](https://github.com/ansible-suite/ansible-site) is a skeleton repository.
->   In order to use it, create your own fork or copy, as described in the [Creating a fork or copy](#creating-a-fork-or-copy) section.
->   The other sections of the documentation assume you are already using your own fork or copy.
+> [!IMPORTANT]
+> The [ansible-suite/ansible-site](https://github.com/ansible-suite/ansible-site) is a skeleton repository.
+> In order to use it, create your own fork or copy, as described in the [Creating a fork or copy](#creating-a-fork-or-copy) section.
+> The other sections of the documentation assume you are already using your own fork or copy.
 
 
 ### Creating a fork or copy
