@@ -2,8 +2,9 @@
 
 ### The ansible-site shell environment activation script
 # This script must be run with 'source' or '.' from an existing bash or zsh shell, not executed directly.
-# The first command-line argument to this script (or to the calling script, if not overridden) specifies the setup mode.
+# The ANSIBLESITE_PROFILE or the first command-line argument to this script (or to the calling script, if not overridden) specifies the profile used.
 # Performs the following actions in the sourcing shell:
+#   - sources variables from .env, .env.local, .env.$ANSIBLESITE_PROFILE and .env.$ANSIBLESITE_PROFILE.local
 #   - activates the Python venv, if it exists, by sourcing 'venv/bin/activate'
 #   - adds the 'bin' and 'external_bin' directories to the PATH environment variable
 #   - sets the ANSIBLE_CONFIG environment variable to point to the 'ansible.cfg' file of the workspace
@@ -204,7 +205,7 @@ ANSIBLESITE_VAULT_PASSWORD_FILE="$ANSIBLESITE/.vault_pass"
 
 ## Process arguments
 
-# determine the setup mode
+# determine the profile
 : "${ANSIBLESITE_PROFILE:=}"
 if [[ -n "${1-}" ]]; then
     # shellcheck disable=SC2034
