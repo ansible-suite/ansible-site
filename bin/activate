@@ -35,7 +35,7 @@ esac
 
 
 ## Exit if executed directly
-if [[ "$_ANSIBLESITE_SCRIPT" = "$0" ]]; then
+if [[ "$_ANSIBLESITE_SHELL" = "bash" ]] && [[ "$_ANSIBLESITE_SCRIPT" = "$0" ]] || [[ "$_ANSIBLESITE_SHELL" = "zsh" ]] && [[ "$ZSH_EVAL_CONTEXT" = "toplevel" ]]; then
     echo "$0: This script must be called with 'source' or '.' from an existing shell." >&2
     exit 1
 fi
