@@ -35,8 +35,7 @@ esac
 
 
 ## Exit if executed directly
-# assuming running in bash in that case
-if [[ "${BASH_SOURCE[0]:-}" = "$0" ]]; then
+if [[ "$_ANSIBLESITE_SCRIPT" = "$0" ]]; then
     echo "$0: This script must be called with 'source' or '.' from an existing shell." >&2
     exit 1
 fi
