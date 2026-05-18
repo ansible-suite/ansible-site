@@ -33,7 +33,11 @@ if [[ ! -d "$ANSIBLESITE_VENV" ]]; then
     : "${ANSIBLESITE_VENV_PYTHON_INTERPRETER:="python${ANSIBLESITE_VENV_PYTHON_VERSION:-3}"}"
 
     # Create the virtual environment
-    "$ANSIBLESITE_VENV_PYTHON_INTERPRETER" -m venv "$ANSIBLESITE_VENV"
+    "$ANSIBLESITE_VENV_PYTHON_INTERPRETER" -m venv "$ANSIBLESITE_VENV" || {
+        ret=$?
+        rm -r "$ANSIBLESITE_VENV"
+        exit $ret
+    }
 
 fi
 
