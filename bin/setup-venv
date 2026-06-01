@@ -27,7 +27,7 @@ source "$(dirname "$(readlink -f "$0")")/activate"
 
 
 ## Create the virtual environment, if it does not exist yet
-if [[ ! -d "$ANSIBLESITE_VENV" ]]; then
+if [[ ! -f "$ANSIBLESITE_VENV_ACTIVATE" ]]; then
 
     # Determine the Python interpreter
     : "${ANSIBLESITE_VENV_PYTHON_INTERPRETER:="python${ANSIBLESITE_VENV_PYTHON_VERSION:-3}"}"
@@ -38,6 +38,9 @@ if [[ ! -d "$ANSIBLESITE_VENV" ]]; then
         rm -r "$ANSIBLESITE_VENV"
         exit $ret
     }
+
+    # Create a modified activation script
+    sed -e 's/deactivate/_venv_deactivate/' -e 's:bin/activate:bin/activate.ansible-suite:' "$ANSIBLESITE_VENV/bin/activate" > "$ANSIBLESITE_VENV/bin/activate.ansible-suite"
 
 fi
 
