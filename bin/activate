@@ -205,6 +205,9 @@ ANSIBLESITE_USE_VENV=1
 # the Python venv directory of the workspace
 ANSIBLESITE_VENV="$ANSIBLESITE/.venv"
 
+# the Python venv activation script
+ANSIBLESITE_VENV_ACTIVATE="$ANSIBLESITE_VENV/bin/activate.ansible-suite"
+
 # the directory with scripts
 ANSIBLESITE_BIN="$ANSIBLESITE/bin"
 
@@ -243,23 +246,18 @@ fi
 if [[ "$ANSIBLESITE_USE_VENV" -eq 1 ]]; then
 
     # Activate if the venv exists and is not activated yet
-    if [[ -d "$ANSIBLESITE_VENV" && "${VIRTUAL_ENV:-}" != "$ANSIBLESITE_VENV" ]]; then
+    if [[ -f "$ANSIBLESITE_VENV_ACTIVATE" && "${VIRTUAL_ENV:-}" != "$ANSIBLESITE_VENV" ]]; then
 
         # ensure PATH does not contain custom paths
         # when activating the venv
         _unset_path
 
         # source the activation script
-        # shellcheck disable=SC1091
-        source "$ANSIBLESITE_VENV/bin/activate"
-
-        # rename the deactivation function to '_venv_deactivate'
-        # to avoid conflict with the deactivation function of this script
-        source_dynamic <(declare -f deactivate | sed 's/deactivate/_venv_deactivate/')
-        unset -f deactivate
+        # shellcheck disable=SC1090
+        source "$ANSIBLESITE_VENV_ACTIVATE"
 
     # ... or handle the situation when venv is required but missing
-    elif [[ ! -d "$ANSIBLESITE_VENV" ]]; then
+    elif [[ ! -f "$ANSIBLESITE_VENV_ACTIVATE" ]]; then
 
         # deactivate if previously activated by us
         if declare -f _venv_deactivate > /dev/null; then
