@@ -32,7 +32,6 @@ VERSION="1.8.1"
 
 # the download target
 TARGET="$ANSIBLESITE_EXTERNAL_BIN/$COMMAND"
-TARGET_PART="$TARGET.part"
 
 # the OS
 if [[ "$(uname -s)" != 'Linux' ]]; then
@@ -61,11 +60,8 @@ DOWNLOAD_URL="https://github.com/jqlang/jq/releases/download/jq-$VERSION/jq-linu
 # ensure parent directory exists for the download target
 mkdir -p "$(dirname "$TARGET")"
 
-# download the binary to a .part file
-wget "$DOWNLOAD_URL" -O "$TARGET_PART"
+# download the binary file
+download-file "$DOWNLOAD_URL" "$TARGET"
 
-# make the file executable
-chmod +x "$TARGET_PART"
-
-# rename the .part file to the final name
-mv "$TARGET_PART" "$TARGET"
+# make the binary file executable
+chmod +x "$TARGET"
