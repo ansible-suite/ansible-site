@@ -12,7 +12,7 @@ set -eu -o pipefail
 # Print usage and exit if the number of arguments is not 2
 if [[ ! $# -eq 2 ]]; then
     echo "Usage: $0 <url> <target>" >&2
-    return 1
+    exit 1
 fi
 
 # Declare variables based on arguments
@@ -36,7 +36,7 @@ elif command -v wget >/dev/null 2>&1; then
     wget "$url" -O "$target_part" || handle_error
 else
     echo "$0: Neither curl nor wget found. Please install one to proceed." >&2
-    return 1
+    exit 1
 fi
 
 ## Rename the .part file to the final name
