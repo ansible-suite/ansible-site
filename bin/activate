@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/bin/sh
+# shellcheck shell=dash
 
 ### The ansible-site shell environment activation script
 # This script must be run with 'source' or '.' from an existing bash or zsh shell, not executed directly.
-# The first command-line argument to this script (or to the calling script, if not overridden) specifies the setup mode.
+# The ANSIBLESITE_PROFILE or the first command-line argument to this script (or to the calling script, if not overridden) specifies the profile used.
 # Performs the following actions in the sourcing shell:
+#   - sources variables from .env, .env.local, .env.$ANSIBLESITE_PROFILE and .env.$ANSIBLESITE_PROFILE.local
 #   - activates the Python venv, if it exists, by sourcing 'venv/bin/activate'
 #   - adds the 'bin' and 'external_bin' directories to the PATH environment variable
 #   - sets the ANSIBLE_CONFIG environment variable to point to the 'ansible.cfg' file of the workspace
@@ -13,29 +15,37 @@
 ## Get information about the shell environment
 
 # Determine the shell the script is running in
-if [[ "${BASH_VERSINFO+x}" ]]; then
-    _ANSIBLESITE_SHELL=bash
-elif [[ "${ZSH_VERSION+x}" ]]; then
-    _ANSIBLESITE_SHELL=zsh
+if [ "${BASH_VERSINFO+x}" ]; then
+    _ANSIBLESITE_SHELL="bash"
+elif [ "${ZSH_VERSION+x}" ]; then
+    _ANSIBLESITE_SHELL="zsh"
 else
-    echo "This environment activation script supports running in bash and zsh." >&2
-    exit 1
+    _ANSIBLESITE_SHELL="sh"
 fi
 
 # Determine the path of this script
 case "$_ANSIBLESITE_SHELL" in
     bash)
+        # shellcheck disable=SC3028 disable=SC3054
         _ANSIBLESITE_SCRIPT="${BASH_SOURCE[0]}"
         ;;
     zsh)
         # shellcheck disable=SC2296
         _ANSIBLESITE_SCRIPT="${(%):-%x}"
+        ;;
+    sh)
+        if [ "$(basename "$0")" = "activate" ]; then
+            _ANSIBLESITE_SCRIPT="$0"
+        else
+            # The path cannot be determined reliably,
+            # using default value, assuming the ansible-site is the CWD
+            _ANSIBLESITE_SCRIPT="bin/activate"
+        fi
 esac
 
 
 ## Exit if executed directly
-# assuming running in bash in that case
-if [[ "${BASH_SOURCE[0]:-}" = "$0" ]]; then
+if { { [ "$_ANSIBLESITE_SHELL" = "bash" ] || [ "$_ANSIBLESITE_SHELL" = "sh" ]; } && [ "$_ANSIBLESITE_SCRIPT" = "$0" ]; } || { [ "$_ANSIBLESITE_SHELL" = "zsh" ] && [ "$ZSH_EVAL_CONTEXT" = "toplevel" ]; }; then
     echo "$0: This script must be called with 'source' or '.' from an existing shell." >&2
     exit 1
 fi
@@ -43,10 +53,34 @@ fi
 
 ## Declare public functions
 
+# A pair of helper functions to simplify sourcing dynamically-generated shell code without process substitution `<(...)`
+
+# Creates a temporary file to store the dynamic output
+source_dynamic_mktemp() {
+    # Create a private temporary file
+    mktemp "${XDG_RUNTIME_DIR-"${TMPDIR-"/tmp"}"}"/ansiblesite-source_dynamic.XXXXXX
+}
+
+# Sources a temporary file and removes it
+source_dynamic_source() {
+    # Declare variables
+    local RC
+
+    # Source the temporary file with its arguments and save exit status
+    RC=0
+    # shellcheck disable=SC1090
+    . "$@" || RC=$?
+
+    # Remove the temporary file
+    rm "$1"
+
+    return $RC
+}
+
 # Helper function to add compatibility of sourcing dynamically-generated shell code
-# in older bash version
-if [[ "$_ANSIBLESITE_SHELL" = 'bash' && "$BASH_VERSINFO" -le 3 ]]; then
-    source_generated() {
+# in older bash version, uses the `source_dynamic-mktemp` and `source_dynamic-process` helper functions
+if [ "$_ANSIBLESITE_SHELL" = 'bash' ] && [ "$BASH_VERSINFO" -le 3 ]; then
+    source_dynamic() {
 
         # Declare variables
         local SCRIPT_FD SCRIPT_TEMP RC
@@ -55,28 +89,20 @@ if [[ "$_ANSIBLESITE_SHELL" = 'bash' && "$BASH_VERSINFO" -le 3 ]]; then
         SCRIPT_FD="$1"
         shift
 
-        # Create a private temporary file
-        SCRIPT_TEMP="$(mktemp "${XDG_RUNTIME_DIR-"${TMPDIR-"/tmp"}"}"/bash-source-generated.XXXXXX)"
+        # Get a private temporary file
+        SCRIPT_TEMP="$(source_dynamic_mktemp)"
 
         # Put the contents of the dynamically-generated file to the temporary file
         cat "$SCRIPT_FD" > "$SCRIPT_TEMP"
 
-        # Source the temporary file and save exit status
-        RC=0
-        # shellcheck disable=SC1090
-        source "$SCRIPT_TEMP" "$@" || RC=$?
-
-        # Remove the temporary file
-        rm "$SCRIPT_TEMP"
-
-        # Return with the exit code of the sourced script
-        return $RC
+        # Source the shell code
+        source_dynamic_source "$SCRIPT_TEMP" "$@"
 
     }
 else
-    source_generated() {
+    source_dynamic() {
         # shellcheck disable=SC1090
-        source "$@"
+        . "$@"
     }
 fi
 
@@ -87,9 +113,11 @@ fi
 case "$_ANSIBLESITE_SHELL" in
     bash)
         _get_indirect() {
+            # shellcheck disable=SC3053
             printf '%s' "${!1:-}"
         }
         _set_indirect() {
+            # shellcheck disable=SC3045
             printf -v "$1" '%s' "$2"
         }
         ;;
@@ -99,7 +127,19 @@ case "$_ANSIBLESITE_SHELL" in
             print "${(P)${1}:-}"
         }
         _set_indirect() {
+            # shellcheck disable=SC3044
             typeset -g "$1=$2"
+        }
+        ;;
+    sh)
+        _get_indirect() {
+            local result
+            eval "result=\${$1}"
+            # shellcheck disable=SC2154
+            echo "$result"
+        }
+        _set_indirect() {
+            eval "$1='$2'"
         }
 esac
 
@@ -107,11 +147,12 @@ esac
 # in a variable prefixed with _OLD_
 _save_and_set_var() {
     local NAME OLD_NAME OLD_VAL NEW_VAL
+
     NAME="$1"
     OLD_NAME="_OLD_$NAME"
     OLD_VAL="$(_get_indirect "$NAME")"
     NEW_VAL="$2"
-    if [[ "$OLD_VAL" != "$NEW_VAL" ]]; then
+    if [ "$OLD_VAL" != "$NEW_VAL" ]; then
         _set_indirect "$OLD_NAME" "$OLD_VAL"
         _set_indirect "$NAME" "$NEW_VAL"
     fi
@@ -121,32 +162,34 @@ _save_and_set_var() {
 # from the variable prefixed with _OLD_
 _revert_saved_var() {
     local NAME OLD_NAME OLD_VAL
+
     NAME="$1"
     OLD_NAME="_OLD_$NAME"
     OLD_VAL="$(_get_indirect "$OLD_NAME")"
-    if [[ -z "$OLD_VAL" ]]; then
+    if [ -z "$OLD_VAL" ]; then
         unset "$NAME"
     else
         _set_indirect "$NAME" "$OLD_VAL"
     fi
-    unset "$OLD_NAME"
 }
 
 # Function that removes custom directories from PATH
 _unset_path() {
-    if [[ "$PATH:" == "$ANSIBLESITE_PATH:"* ]]; then
-        PATH="$PATH:"
-        PATH="${PATH//$ANSIBLESITE_PATH:/}"
-        PATH="${PATH%:}"
-        export PATH
-    fi
+    case "$PATH:" in
+        "$ANSIBLESITE_PATH:"*)
+            PATH="$PATH:"
+            PATH="$(echo "$PATH" | sed "s|$ANSIBLESITE_PATH:||g")"
+            PATH="${PATH%:}"
+            export PATH
+        ;;
+    esac
 }
 
 # Function to load variable files
 _load_vars() {
-    if [[ -e "$1" ]]; then
+    if [ -e "$1" ]; then
         # shellcheck disable=SC1090
-        source "$1"
+        . "$1"
     fi
 }
 
@@ -162,13 +205,13 @@ _deactivate() {
     _revert_saved_var ANSIBLE_CONFIG
 
     # Revert ANSIBLE_VAULT_PASSWORD_FILE
-    if [[ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]]; then
+    if [ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]; then
         _revert_saved_var ANSIBLE_VAULT_PASSWORD_FILE
     fi
 
 
     ## Deactivate the Python venv, if it is activated
-    if declare -f _venv_deactivate > /dev/null; then
+    if command -v _venv_deactivate > /dev/null; then
         _venv_deactivate
     fi
 
@@ -189,6 +232,9 @@ ANSIBLESITE_USE_VENV=1
 # the Python venv directory of the workspace
 ANSIBLESITE_VENV="$ANSIBLESITE/.venv"
 
+# the Python venv activation script
+ANSIBLESITE_VENV_ACTIVATE="$ANSIBLESITE_VENV/bin/activate.ansible-suite"
+
 # the directory with scripts
 ANSIBLESITE_BIN="$ANSIBLESITE/bin"
 
@@ -204,9 +250,9 @@ ANSIBLESITE_VAULT_PASSWORD_FILE="$ANSIBLESITE/.vault_pass"
 
 ## Process arguments
 
-# determine the setup mode
+# determine the profile
 : "${ANSIBLESITE_PROFILE:=}"
-if [[ -n "${1-}" ]]; then
+if [ -n "${1-}" ]; then
     # shellcheck disable=SC2034
     ANSIBLESITE_PROFILE="$1"
 fi
@@ -215,7 +261,7 @@ fi
 ## Load variables from .env files
 _load_vars "$ANSIBLESITE/.env"
 _load_vars "$ANSIBLESITE/.env.local"
-if [[ -n "$ANSIBLESITE_PROFILE" ]]; then
+if [ -n "$ANSIBLESITE_PROFILE" ]; then
     _load_vars "$ANSIBLESITE/.env.$ANSIBLESITE_PROFILE"
     _load_vars "$ANSIBLESITE/.env.$ANSIBLESITE_PROFILE.local"
 fi
@@ -224,34 +270,29 @@ fi
 ## Activate the Python venv
 
 # Activate only if enabled
-if [[ "$ANSIBLESITE_USE_VENV" -eq 1 ]]; then
+if [ "$ANSIBLESITE_USE_VENV" -eq 1 ]; then
 
     # Activate if the venv exists and is not activated yet
-    if [[ -d "$ANSIBLESITE_VENV" && "${VIRTUAL_ENV:-}" != "$ANSIBLESITE_VENV" ]]; then
+    if [ -f "$ANSIBLESITE_VENV_ACTIVATE" ] && [ "${VIRTUAL_ENV:-}" != "$ANSIBLESITE_VENV" ]; then
 
         # ensure PATH does not contain custom paths
         # when activating the venv
         _unset_path
 
         # source the activation script
-        # shellcheck disable=SC1091
-        source "$ANSIBLESITE_VENV/bin/activate"
-
-        # rename the deactivation function to '_venv_deactivate'
-        # to avoid conflict with the deactivation function of this script
-        source_generated <(declare -f deactivate | sed 's/deactivate/_venv_deactivate/')
-        unset -f deactivate
+        # shellcheck disable=SC1090
+        . "$ANSIBLESITE_VENV_ACTIVATE"
 
     # ... or handle the situation when venv is required but missing
-    elif [[ ! -d "$ANSIBLESITE_VENV" ]]; then
+    elif [ ! -f "$ANSIBLESITE_VENV_ACTIVATE" ]; then
 
         # deactivate if previously activated by us
-        if declare -f _venv_deactivate > /dev/null; then
+        if command -v _venv_deactivate > /dev/null; then
             _venv_deactivate
         fi
 
         # print an informational message that the venv is missing
-        if [[ "${ANSIBLESITE_SUPPRESS_VENV_WARNING:-0}" -eq 0 ]]; then
+        if [ "${ANSIBLESITE_SUPPRESS_VENV_WARNING:-0}" -eq 0 ]; then
             cat <<EOF >&2
 $_ANSIBLESITE_SCRIPT: WARNING: This workspace is configured to use its own Python venv,
 please set it up using the 'setup' or 'setup-venv' scripts,
@@ -262,7 +303,7 @@ EOF
     fi
 
 # ... or deactivate if activated by us but now disabled
-elif declare -f _venv_deactivate > /dev/null; then
+elif command -v _venv_deactivate > /dev/null; then
     _venv_deactivate
 fi
 
@@ -270,9 +311,13 @@ fi
 ## Modify environment variables
 
 # Add directories with executables of this workspace to PATH
-if [[ "${PATH:=}:" != "$ANSIBLESITE_PATH:"* ]]; then
-    export PATH="$ANSIBLESITE_PATH:$PATH"
-fi
+case "${PATH:=}:" in
+    "$ANSIBLESITE_PATH:"*)
+        ;;
+    *) 
+        export PATH="$ANSIBLESITE_PATH:$PATH"
+        ;;
+esac
 
 # Set the ANSIBLE_CONFIG variable to the value for this workspace ($ANSIBLESITE_CONFIG)
 _save_and_set_var ANSIBLE_CONFIG "$ANSIBLESITE_CONFIG"
@@ -280,10 +325,10 @@ export ANSIBLE_CONFIG
 
 # Set the ANSIBLE_VAULT_PASSWORD_FILE to the value for this workspace ($ANSIBLESITE_VAULT_PASSWORD_FILE)
 # only if the file is present
-if [[ -f "$ANSIBLESITE_VAULT_PASSWORD_FILE" ]]; then
+if [ -f "$ANSIBLESITE_VAULT_PASSWORD_FILE" ]; then
     _save_and_set_var ANSIBLE_VAULT_PASSWORD_FILE "$ANSIBLESITE_VAULT_PASSWORD_FILE"
     export ANSIBLE_VAULT_PASSWORD_FILE
-elif [[ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]]; then
+elif [ "${_OLD_ANSIBLE_VAULT_PASSWORD_FILE+x}" ]; then
     _revert_saved_var ANSIBLE_VAULT_PASSWORD_FILE
 fi
 
@@ -313,7 +358,7 @@ deactivate() {
     unset ANSIBLESITE_PROFILE
 
     # unset public functions
-    unset -f source_generated
+    unset -f source_dynamic
 
     # unset internal functions
     unset -f _get_indirect
