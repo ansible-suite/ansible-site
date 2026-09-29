@@ -1,0 +1,15 @@
+---
+profile: production
+
+skip_list:
+  - name[missing]            # we do not require a name for every task
+  - yaml[line-length]        # long regular expressions and similar values
+  - command-instead-of-shell # shell is used where it is appropriate
+
+warn_list:
+  - risky-file-permissions
+  - no-changed-when
+
+exclude_paths:
+  - .venv/
+  - data/
