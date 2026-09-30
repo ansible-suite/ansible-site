@@ -56,7 +56,7 @@ and warnings:
 
 - `name[missing]`, `yaml[line-length]`, and `command-instead-of-shell` are skipped;
 - `risky-file-permissions` and `no-changed-when` are reported as warnings;
-- `.venv/` and `data/` are excluded from the lint run.
+- `.ansible/`, `.venv/`, `collections/`, and `data/` are excluded from the lint run.
 
 The skips are intentional repository policy. In particular, shell usage is allowed where
 it is needed, and long YAML lines may be required by regular expressions or similar
@@ -84,7 +84,8 @@ necessary.
 ## `ansible-lint`
 
 Run `ansible-lint` from the repository root so that it can discover `.ansible-lint`.
-This checks Ansible playbooks and roles while excluding `.ansible` explicitly.
+This checks Ansible playbooks and roles while excluding generated Ansible data and
+installed Galaxy collections.
 
 ```bash
 ansible-lint . --exclude .ansible
@@ -108,3 +109,4 @@ the appropriate inventory, variables, collections, or vault configuration.
 ## References
 - [oneuptime: How to set up Ansible linting with ansible-lint in CI](https://oneuptime.com/blog/post/2026-02-21-how-to-set-up-ansible-linting-with-ansible-lint-in-ci/view)
 - [GitHub: run-ansible-lint](https://github.com/marketplace/actions/run-ansible-lint)
+- [Ansible Documentation: Configuring ansible-lint](https://docs.ansible.com/projects/lint/configuring/#ansible-lint-configuration)
