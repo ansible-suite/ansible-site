@@ -1,3 +1,4 @@
+---
 ### The Ansible Galaxy requirements file
 # Specifies the collections and roles that should be installed
 # in this Ansible workspace.
