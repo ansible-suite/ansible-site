@@ -8,6 +8,7 @@
     - [Excluding Files and Directories](#excluding-files-and-directories)
   - [`ansible-lint`](#ansible-lint-1)
   - [`ansible-playbook`](#ansible-playbook)
+  - [References](#references)
 
 Linting checks the syntax, formatting, and common problems in Ansible content before it is
 used. It should be run for playbooks, inventories, group and host variables, and files
@@ -103,3 +104,7 @@ ansible-playbook --syntax-check <playbook.yml>
 The syntax check validates that the selected playbook can be parsed with the current
 Ansible installation. It does not replace `yamllint` or `ansible-lint`, and it may need
 the appropriate inventory, variables, collections, or vault configuration.
+
+## References
+- [oneuptime: How to set up Ansible linting with ansible-lint in CI](https://oneuptime.com/blog/post/2026-02-21-how-to-set-up-ansible-linting-with-ansible-lint-in-ci/view)
+- [GitHub: run-ansible-lint](https://github.com/marketplace/actions/run-ansible-lint)
