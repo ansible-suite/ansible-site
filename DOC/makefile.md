@@ -22,9 +22,10 @@ Targets:
   ansible-playbook-syntax-check: Check the syntax of all Ansible playbooks in the repository
   lint:                  Run all linting checks (yaml-lint, ansible-lint, and ansible-playbook syntax check)
   auto-fix-syntax:       Automatically fix syntax issues in Ansible playbooks using ansible-lint
-  setup:                 Download and install dependencies, set up the virtual environment, and prepare the development environment
-  clean:                 Clean build artifacts
-  clean-all:             Clean all build artifacts and dependencies
+  .vault_pass:           Generate .vault_pass file for Ansible Vault.
+  setup:                 Download and install dependencies, set up virtual environment, and prepare the development environment.
+  clean:                 Clean build artifacts.
+  clean-all:             Clean all build artifacts and dependencies.
 ```
 
 > [!TIP]

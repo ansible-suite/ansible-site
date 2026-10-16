@@ -119,6 +119,7 @@ help:
 	@echo "  ansible-playbook-syntax-check: $(ANSIBLE-PLAYBOOK-SYNTAX-CHECK)"
 	@echo "  lint:                  $(LINT)"
 	@echo "  auto-fix-syntax:       $(AUTO-FIX-SYNTAX)"
+	@echo "  .vault_pass:           $(VAULT-PASS)"
 	@echo "  setup:                 $(SETUP)"
 	@echo "  clean:                 $(CLEAN)"
 	@echo "  clean-all:             $(CLEAN-ALL)"
