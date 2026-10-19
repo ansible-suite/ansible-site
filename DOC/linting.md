@@ -72,14 +72,16 @@ directories before passing the remaining files to yamllint.
 ### Excluding Files and Directories
 
 ```bash
-find . \( -path './.ansible' -o -path './.venv' \) -prune -o \
+find . \( -path './.ansible' -o -path './.venv' -o -path './.github/workflows' \) -prune -o \
 		-type f \( -name '*.yml' -o -name '*.yaml' \) -print0 | \
 		xargs -0 -r yamllint
 ```
 
 The `-print0` and `-0` options keep filenames containing spaces or other special
-characters safe. Add further generated directories to the `find` exclusion list when
-necessary.
+characters safe. CI/CD workflow files under `.github/workflows/` are excluded because
+GitHub Actions uses YAML syntax such as `on` that is valid there but triggers a
+yamllint truthy-value warning. Add further generated directories to the `find`
+exclusion list when necessary.
 
 ## `ansible-lint`
 

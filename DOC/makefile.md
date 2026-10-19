@@ -44,20 +44,20 @@ Targets:
 
 ## Finding YAML files
 
-The `bin/find-yaml-files.sh` script finds YAML files with either the `.yml` or
+The `bin/find-yaml-files` script finds YAML files with either the `.yml` or
 `.yaml` extension. When run without a path argument, it searches the whole
 repository and excludes the `.ansible` and `.venv` directories.
 
 Run it for the whole repository:
 
 ```bash
-bin/find-yaml-files.sh
+bin/find-yaml-files
 ```
 
 You can also limit the search to specific files or directories:
 
 ```bash
-bin/find-yaml-files.sh site.yml playbooks
+bin/find-yaml-files site.yml playbooks
 ```
 
 Use the `--print0` option to separate results with a null character. This is
@@ -65,7 +65,7 @@ useful when piping file names to commands such as `xargs`, because it safely
 handles spaces and other special characters in file names:
 
 ```bash
-bin/find-yaml-files.sh --print0 | xargs -0 -r yamllint
+bin/find-yaml-files --print0 | xargs -0 -r yamllint
 ```
 
 The `Makefile` uses this script for YAML linting and to find playbooks for

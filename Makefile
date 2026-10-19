@@ -13,7 +13,7 @@ BOLD   := $(shell printf '\033[1m')
 RESET  := $(shell printf '\033[0m')
 
 CHECK_DIR := .syntax-checks
-PLAYBOOKS := $(shell bin/find-yaml-files.sh site.yml playbooks)
+PLAYBOOKS := $(shell bin/find-yaml-files site.yml playbooks)
 CHECKS := $(addprefix $(CHECK_DIR)/,$(PLAYBOOKS:=.ok))
 
 .PHONY: yaml-lint ansible-lint ansible-playbook-syntax-check lint \
@@ -30,7 +30,7 @@ install:
 YAML-LINT := Run yamllint on all YAML files in the repository
 yaml-lint:
 	@printf "$(YELLOW)Running yamllint...$(RESET)\n"
-	@bin/find-yaml-files.sh --print0 | xargs -0 -r yamllint
+	@bin/find-yaml-files --print0 | xargs -0 -r yamllint
 
 ANSIBLE-LINT := Run ansible-lint on all Ansible playbooks in the repository
 ansible-lint:

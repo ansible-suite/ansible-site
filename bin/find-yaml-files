@@ -11,7 +11,7 @@ if [[ "${1:-}" == "--print0" ]]; then
 fi
 
 if [[ "$#" -eq 0 ]]; then
-	find_args=(. \( -path './.ansible' -o -path './.venv' \) -prune -o)
+	find_args=(. \( -path './.ansible' -o -path './.venv' -o -path './.github/workflows' \) -prune -o)
 else
 	find_args=("$@")
 fi
